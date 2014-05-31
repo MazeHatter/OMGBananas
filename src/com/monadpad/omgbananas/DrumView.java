@@ -29,7 +29,7 @@ public class DrumView extends View {
     private int tall = 8;
 
     private boolean[] data;
-    private MonadJam mJam;
+    private Jam mJam;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -211,7 +211,7 @@ public class DrumView extends View {
 
     }
 
-    public void setJam(MonadJam jam, DrumChannel channel) {
+    public void setJam(Jam jam, DrumChannel channel) {
         mJam = jam;
         mChannel = channel;
         mJam.addInvalidateOnBeatListener(this);

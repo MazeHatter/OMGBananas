@@ -3,7 +3,6 @@ package com.monadpad.omgbananas;
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -25,7 +24,7 @@ public class GuitarView extends View {
     private int boxWidth;
     private int boxHeight;
 
-    private MonadJam mJam;
+    private Jam mJam;
     private Channel mChannel;
 
     private Paint topPanelPaint;
@@ -204,7 +203,7 @@ public class GuitarView extends View {
         return true;
     }
 
-    public void setJam(MonadJam jam, Channel channel) {
+    public void setJam(Jam jam, Channel channel) {
         mJam = jam;
         mChannel = channel;
         setScaleInfo();

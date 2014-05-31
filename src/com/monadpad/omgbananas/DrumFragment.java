@@ -12,7 +12,7 @@ import android.view.ViewGroup;
  */
 public class DrumFragment extends OMGFragment {
 
-    private MonadJam mJam;
+    private Jam mJam;
     private DrumChannel mChannel;
     private DrumView drumMachine;
 
@@ -29,7 +29,7 @@ public class DrumFragment extends OMGFragment {
         return view;
     }
 
-    public void setJam(MonadJam jam, DrumChannel channel) {
+    public void setJam(Jam jam, DrumChannel channel) {
         mJam = jam;
         mChannel = channel;
 

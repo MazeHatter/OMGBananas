@@ -1,7 +1,6 @@
 package com.monadpad.omgbananas;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.view.ViewGroup;
  */
 public class GuitarFragment extends OMGFragment {
 
-    private MonadJam mJam;
+    private Jam mJam;
     private GuitarView guitarView;
     private Channel mChannel;
 
@@ -30,7 +29,7 @@ public class GuitarFragment extends OMGFragment {
         return view;
     }
 
-    public void setJam(MonadJam jam, Channel channel) {
+    public void setJam(Jam jam, Channel channel) {
         mJam = jam;
         mChannel = channel;
 

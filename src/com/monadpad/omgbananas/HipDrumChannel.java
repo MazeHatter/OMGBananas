@@ -20,7 +20,7 @@ public class HipDrumChannel extends DrumChannel {
 
     }
 
-    public HipDrumChannel(Context context, SoundPool pool, MonadJam jam) {
+    public HipDrumChannel(Context context, SoundPool pool, Jam jam) {
         super(context, pool, jam);
 
         isAScale = false;

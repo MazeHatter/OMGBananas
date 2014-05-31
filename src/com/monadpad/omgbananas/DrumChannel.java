@@ -28,7 +28,7 @@ public abstract class DrumChannel extends Channel {
 
     protected String kitName = "";
 
-    public DrumChannel(Context context, SoundPool pool, MonadJam jam) {
+    public DrumChannel(Context context, SoundPool pool, Jam jam) {
         super(context, pool);
 
         rand = jam.getRand();
@@ -96,17 +96,26 @@ public abstract class DrumChannel extends Channel {
 
     public void makeDrumBeatsFromMelody(ArrayList<Note> bassline) {
 
+        clearPattern();
+
         boolean[] kick = pattern[0];
         boolean[] clap = pattern[1];
+        boolean[][] toms = new boolean[][] {pattern[5], pattern[6], pattern[7]};
+
         double usedBeats = 0.0d;
 
         boolean snareCutTime = rand.nextBoolean();
 
         int ib = 0;
 
+        boolean usetom = false;
+        boolean usekick;
+        boolean useclap;
+
         for (Note note : bassline) {
-            boolean usekick = false;
-            boolean useclap = false;
+            usekick = false;
+            useclap = false;
+            usetom = false;
 
             if ((snareCutTime && usedBeats % 2 == 1.0d) ||
                     (!snareCutTime && usedBeats % 4 == 2.0d)) {
@@ -117,11 +126,17 @@ public abstract class DrumChannel extends Channel {
                 usekick = !note.isRest() || rand.nextBoolean();
             }
             else {
-                usekick = !note.isRest() && rand.nextBoolean();
+                if (rand.nextBoolean())
+                    usekick = !note.isRest() && rand.nextBoolean();
+                else
+                    usetom = !note.isRest() && rand.nextBoolean();
             }
 
             kick[ib] = usekick;
             clap[ib] = useclap;
+            if (usetom) {
+                toms[rand.nextInt(3)][ib] = true;
+            }
 
             for (ib = ib + 1; ib < (usedBeats  + note.getBeats()) * subbeats; ib++) {
                 kick[ib] = rand.nextBoolean() && ((snareCutTime && ib % (2 * subbeats) == 0) ||
@@ -146,23 +161,40 @@ public abstract class DrumChannel extends Channel {
 
     public void makeHiHatBeats(boolean defaultPattern) {
 
-        boolean[] hihat = pattern[2];
+        boolean[][] hihats = new boolean[][] {pattern[2], pattern[3]};
 
-        if (defaultPattern) {
-            for (int i = 0; i < hihat.length; i++) {
-                hihat[i] = default_hithat[i];
-            }
-            return;
+        int openhh = rand.nextInt(3) > 0 ? 0 : 1;
+        int opensubs = rand.nextInt(3) > 0 ? 0 : 1;
+        int tmpopensubs;
+
+        for (int i = 0; i < hihats[0].length; i++) {
+            hihats[0][i] = defaultPattern && default_hithat[i];
+            hihats[1][i] = false;
         }
 
-        int pattern = rand.nextInt(5);
+        if (defaultPattern)
+            return;
 
-//        hihat = new boolean[beats * subbeats];
-        for (int i = 0; i < hihat.length; i++) {
-            hihat[i] = pattern == 0 ?  i % subbeats == 0 :
-                    pattern == 1 ? i % 2 == 0 :
-                            pattern == 2 ? rand.nextBoolean() :
-                                    rand.nextBoolean() || rand.nextBoolean();
+
+        int downbeat;
+        for (int i = 0; i < 4; i++) {
+            downbeat = i * 4;
+            hihats[openhh][downbeat] = rand.nextInt(20) > 0;
+            hihats[openhh][downbeat + 16] = rand.nextInt(20) > 0;
+
+            if (rand.nextBoolean()) {
+                tmpopensubs = (opensubs == 1 && rand.nextBoolean()) ? 1 : 0;
+                hihats[tmpopensubs][downbeat + 2] = true;
+                hihats[tmpopensubs][downbeat + 2 + 16] = true;
+
+                if (rand.nextBoolean()) {
+                    hihats[opensubs][downbeat + 1] = true;
+                    hihats[opensubs][downbeat + 3] = true;
+                    hihats[opensubs][downbeat + 1 + 16] = true;
+                    hihats[opensubs][downbeat + 3 + 16] = true;
+                }
+
+            }
         }
     }
 
@@ -176,13 +208,13 @@ public abstract class DrumChannel extends Channel {
             return;
         }
 
-        int pattern = rand.nextInt(5);
+        int pattern = rand.nextInt(10);
 
         for (int i = 0; i < kick.length; i++) {
-            kick[i] = pattern == 0 ? i % subbeats == 0 :
-                    pattern == 1 ? i % 8 == 0 :
-                            (i == 0 || i == 8 || i == 16 ||
-                                    (rand.nextBoolean() && rand.nextBoolean())); //rand.nextBoolean();
+            kick[i] = pattern == 0 ? (rand.nextBoolean() && rand.nextBoolean()) :
+                      pattern <  5  ? i % subbeats == 0 :
+                      pattern <  9 ? i % 8 == 0 :
+                              (i == 0 || i == 8 || i == 16);
         }
     }
     public void makeClapBeats(boolean defaultPattern) {
@@ -198,11 +230,15 @@ public abstract class DrumChannel extends Channel {
         int pattern = rand.nextInt(10);
 
 //        clap = new boolean[beats * subbeats];
+
+        boolean snareCutTime = rand.nextBoolean();
         for (int i = 0; i < clap.length; i++) {
+
             clap[i] = pattern != 0 && (
-                    pattern == 1 ? i == 4 || i == 12 || i == 20 || i == 28 :
-                            pattern == 2 ? i == 4 || i == 12 || i == 13 || i == 20 :
-                                    i == 4 || i == 12 || i == 20);
+                (snareCutTime && i % (2 * subbeats) == subbeats) ||
+                        (!snareCutTime && i % (4 * subbeats) == (2 * subbeats))
+
+            );
 
         }
 
@@ -213,9 +249,61 @@ public abstract class DrumChannel extends Channel {
     }
 
     public void makeDrumBeats() {
+
+        clearPattern();
+
         makeKickBeats(false);
         makeClapBeats(false);
         makeHiHatBeats(false);
+
+        makeTomBeats();
+
+    }
+
+    public void makeTomBeats() {
+
+        //maybe none?
+        if (rand.nextBoolean())
+            return;
+
+        if (rand.nextInt(5) > -1) {
+            makeTomFill();
+            return;
+        }
+
+        boolean[][] toms = new boolean[][] {pattern[5], pattern[6], pattern[7]};
+
+        for (int ib = 0; ib < 4; ib++) {
+
+        }
+
+    }
+
+    public void makeTomFill() {
+
+        boolean everyBar = rand.nextBoolean();
+        boolean[][] toms = new boolean[][] {pattern[5], pattern[6], pattern[7]};
+
+        int start = 8;
+        if (!everyBar && rand.nextInt(5) == 0) {
+            start = 0;
+        }
+
+        boolean sparse = rand.nextBoolean();
+        boolean on;
+        int tom;
+        for (int i = start; i < 16; i++) {
+
+            on = (sparse && rand.nextBoolean()) ||
+                    (!sparse && (rand.nextBoolean() || rand.nextBoolean()));
+            tom = rand.nextInt(3);
+
+            if (everyBar) {
+                toms[tom][i] = on;
+            }
+
+            toms[tom][i + 16] = on;
+        }
 
     }
 
@@ -250,5 +338,12 @@ public abstract class DrumChannel extends Channel {
 
     }
 
+    public void clearPattern() {
+        for (int i = 0; i < pattern.length; i++) {
+            for (int j = 0; j < pattern[i].length; j++) {
+                pattern[i][j] = false;
+            }
+        }
+    }
 }
 

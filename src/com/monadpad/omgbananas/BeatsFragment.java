@@ -14,7 +14,7 @@ import android.widget.TextView;
  */
 public class BeatsFragment extends OMGFragment {
 
-    private MonadJam mJam;
+    private Jam mJam;
     private MainFragment mMainFragment;
 
     private View mView;
@@ -38,7 +38,7 @@ public class BeatsFragment extends OMGFragment {
         return view;
     }
 
-    public void setJam(MonadJam jam, MainFragment mainFragment) {
+    public void setJam(Jam jam, MainFragment mainFragment) {
         mJam = jam;
         mMainFragment = mainFragment;
 

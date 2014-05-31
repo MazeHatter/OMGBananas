@@ -12,11 +12,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 
-/**
- * User: m
- * Date: 5/6/14
- * Time: 6:48 PM
- */
 public class MainFragment extends OMGFragment {
 
     private View mView;
@@ -37,8 +32,9 @@ public class MainFragment extends OMGFragment {
     private View guitarControls;
 
     private View samplerControls;
+    private Button samplerMuteButton;
 
-    private MonadJam mJam;
+    private Jam mJam;
 
     private Button mKeyButton;
     private ChordsView mChordsButton;
@@ -49,12 +45,13 @@ public class MainFragment extends OMGFragment {
     private View synthMonkeyHead;
     private View bassMonkeyHead;
     private View guitarMonkeyHead;
+    private View samplerMonkeyHead;
 
     private Button bpmButton;
 
 
 
-    public void setJam(MonadJam jam) {
+    public void setJam(Jam jam) {
         mJam = jam;
 
         mChordsButton.setJam((Main)getActivity(), jam);
@@ -209,6 +206,27 @@ public class MainFragment extends OMGFragment {
                 f.setJam(mJam, mJam.getSamplerChannel());
                 showFragment(f);
 
+            }
+        });
+
+        samplerMonkeyHead = samplerControls.findViewById(R.id.libeniz_head);
+        samplerMonkeyHead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                play();
+                mJam.monkeyWithSampler();
+                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                view.startAnimation(turnin);
+            }
+        });
+
+
+        samplerMuteButton = (Button)samplerControls.findViewById(R.id.mute_button);
+        samplerMuteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setBackgroundColor(mJam.toggleMuteSampler() ?
+                        Color.GREEN : Color.RED);
             }
         });
 

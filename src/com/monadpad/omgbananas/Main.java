@@ -1,9 +1,7 @@
 package com.monadpad.omgbananas;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.Dialog;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -11,16 +9,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Main extends FragmentActivity {
 
-    MonadJam mJam;
+    Jam mJam;
 
     View chordControls;
 
@@ -45,7 +39,7 @@ public class Main extends FragmentActivity {
 
         setContentView(R.layout.main);
 
-        mJam = new MonadJam(this);
+        mJam = new Jam(this);
 
 
         ((MainFragment)getSupportFragmentManager().findFragmentById(R.id.mixerFragment)).setJam(mJam);

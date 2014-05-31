@@ -5,7 +5,7 @@ import android.media.SoundPool;
 
 public class RockDrumChannel extends DrumChannel {
 
-    public RockDrumChannel(Context context, SoundPool pool, MonadJam jam) {
+    public RockDrumChannel(Context context, SoundPool pool, Jam jam) {
         super(context, pool, jam);
 
         isAScale = false;

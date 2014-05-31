@@ -28,7 +28,7 @@ public class MelodyView extends View {
     private int boxWidth;
     private int boxHeight;
 
-    private MonadJam mJam;
+    private Jam mJam;
     private Main mActivity;
 
     private NoteList mList;;
@@ -292,7 +292,7 @@ public class MelodyView extends View {
         invalidate();
     }
 
-    public void setJam(Main activity, MonadJam jam) {
+    public void setJam(Main activity, Jam jam) {
         mJam = jam;
         mActivity = activity;
     }

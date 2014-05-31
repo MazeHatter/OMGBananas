@@ -5,7 +5,7 @@ import android.media.SoundPool;
 
 public class SamplerChannel extends DrumChannel {
 
-    public SamplerChannel(Context context, SoundPool pool, MonadJam jam) {
+    public SamplerChannel(Context context, SoundPool pool, Jam jam) {
         super(context, pool, jam);
 
         isAScale = false;
@@ -31,4 +31,28 @@ public class SamplerChannel extends DrumChannel {
         ids[7] = mPool.load(context, R.raw.sampler_3_chimes, 1);
 
     }
+
+    public void makeFill() {
+
+        clearPattern();
+
+        boolean[][] toms = new boolean[][] {pattern[0], pattern[1], pattern[2],
+                                            pattern[3], pattern[4]};
+
+        boolean sparse = rand.nextBoolean();
+        boolean on;
+        int tom;
+        for (int i = 0; i < 16; i++) {
+
+            on = (sparse && rand.nextBoolean()) ||
+                    (!sparse && (rand.nextBoolean() || rand.nextBoolean()));
+            tom = rand.nextInt(5);
+
+            toms[tom][i] = on;
+            toms[tom][i + 16] = on;
+        }
+
+    }
+
+
 }

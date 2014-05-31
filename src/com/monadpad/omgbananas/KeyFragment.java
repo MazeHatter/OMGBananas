@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 /**
@@ -17,7 +16,7 @@ import android.widget.ListView;
  */
 public class KeyFragment extends OMGFragment {
 
-    private MonadJam mJam;
+    private Jam mJam;
     private View mView;
     private MainFragment mainFragment;
 
@@ -33,7 +32,7 @@ public class KeyFragment extends OMGFragment {
         return mView;
     }
 
-    public void setJam(MonadJam jam, MainFragment main) {
+    public void setJam(Jam jam, MainFragment main) {
         mJam = jam;
         mainFragment = main;
 

@@ -10,7 +10,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MonadJam {
+public class Jam {
 
     private Random rand = new Random();
 
@@ -24,7 +24,7 @@ public class MonadJam {
 
     private Channel keyboardChannel;
     private Channel guitarChannel;
-    private DrumChannel samplerChannel;
+    private SamplerChannel samplerChannel;
 
     private SoundPool pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
     private boolean soundPoolLoaded = false;
@@ -48,7 +48,7 @@ public class MonadJam {
 
     private int currentChord = 0;
 
-    public MonadJam(Context context) {
+    public Jam(Context context) {
 
         mContext = context;
         mm = new MelodyMaker(mContext);
@@ -166,6 +166,11 @@ public class MonadJam {
         return drumChannel.enabled;
     }
 
+    public boolean toggleMuteSampler() {
+        samplerChannel.toggleEnabled();
+        return samplerChannel.enabled;
+    }
+
     public int getCurrentSubbeat() {
         int i = playbackThread.i;
         if (i == 0) i = beats * subbeats;
@@ -259,7 +264,7 @@ public class MonadJam {
 
         basslineChannel.setNotes(mm.applyScale(basslineChannel.getNotes().list, p, 0));
         guitarChannel.setNotes(mm.applyScale(guitarChannel.getNotes().list, p, 12));
-        keyboardChannel.setNotes(mm.applyScale(keyboardChannel.getNotes().list, p, 24));
+        keyboardChannel.setNotes(mm.applyScale(keyboardChannel.getNotes().list, p, 12));
 
     }
 
@@ -268,8 +273,9 @@ public class MonadJam {
         keyboardChannel.mute();
         basslineChannel.mute();
         guitarChannel.mute();
-        pool.release();
-        pool = null;
+        samplerChannel.mute();
+        //pool.release();
+        //pool = null;
     }
 
 
@@ -326,6 +332,8 @@ public class MonadJam {
         monkeyWithDrums();
         monkeyWithGuitar();
         monkeyWithSynth();
+
+        samplerChannel.makeFill();
 
         makeChannelNotes(guitarChannel, 12);
         makeChannelNotes(keyboardChannel, 12);
@@ -531,10 +539,14 @@ public class MonadJam {
 
     }
 
+    public void monkeyWithSampler() {
+        samplerChannel.makeFill();
+    }
+
     public void monkeyWithDrums() {
 
         //half the time, drums from the bass
-        if (rand.nextBoolean()) {
+        if (false && rand.nextBoolean()) {
             drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes().list);
         }
         else {
