@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center"
+              android:orientation="vertical">
+    <ImageView
+        android:src="@drawable/banana48"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView android:text="Press to Save"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/txt_press_banana"
+        android:textSize="22sp"
+        android:gravity="center"
+        />
+    <ImageView
+        android:layout_marginTop="10dip"
+        android:src="@drawable/icon48"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView android:text="Press to Change"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/txt_press_banana"
+        android:textSize="22sp"
+        android:id="@+id/txt_press_monkey"
+        android:gravity="center"
+        />
+
+    <TextView android:text="OMG Bananas!"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/bpm_caption"
+        android:textSize="48sp"
+        android:layout_below="@id/txt_press_monkey"
+        android:gravity="center"
+        android:padding="8dip"
+        android:layout_marginTop="10dip"
+        />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loading_progress"
+        android:layout_below="@id/bpm_caption"/>
+
+</LinearLayout>

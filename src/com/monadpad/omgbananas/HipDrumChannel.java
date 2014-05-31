@@ -5,8 +5,7 @@ import android.media.SoundPool;
 
 public class HipDrumChannel extends DrumChannel {
 
-    public void loadPool() {
-        ids = new int[8];
+    public int loadPool() {
         int i= 0;
 
         ids[i++] = mPool.load(context, R.raw.hh_kick, 1);
@@ -18,6 +17,7 @@ public class HipDrumChannel extends DrumChannel {
         ids[i++] = mPool.load(context, R.raw.hh_tom_ml, 1);
         ids[i++] = mPool.load(context, R.raw.hh_tom_l, 1);
 
+        return ids.length;
     }
 
     public HipDrumChannel(Context context, SoundPool pool, Jam jam) {
@@ -26,6 +26,7 @@ public class HipDrumChannel extends DrumChannel {
         isAScale = false;
         highNote = 7;
         lowNote = 0;
+        ids = new int[8];
 
         presetNames = new String[] {
                 "PRESET_HH_KICK",

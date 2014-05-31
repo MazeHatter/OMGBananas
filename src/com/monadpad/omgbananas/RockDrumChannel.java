@@ -25,10 +25,11 @@ public class RockDrumChannel extends DrumChannel {
                 "crash", "h tom", "m tom", "l tom"};
 
         kitName = "PRESET_ROCKKIT";
+        ids = new int[8];
+
     }
 
-    public void loadPool() {
-        ids = new int[8];
+    public int loadPool() {
         int i= 0;
 
         ids[i++] = mPool.load(context, R.raw.rock_kick, 1);
@@ -40,6 +41,7 @@ public class RockDrumChannel extends DrumChannel {
         ids[i++] = mPool.load(context, R.raw.rock_tom_ml, 1);
         ids[i++] = mPool.load(context, R.raw.rock_tom_l, 1);
 
+        return ids.length;
     }
 
 }

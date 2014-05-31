@@ -108,7 +108,7 @@ public abstract class Channel {
 
     }
 
-    abstract public void loadPool();
+    abstract public int loadPool();
 
 
     public int getHighNote() {
@@ -169,5 +169,9 @@ public abstract class Channel {
     public void clearNotes() {
         mNoteList.list.clear();
         state = STATE_LIVEPLAY;
+    }
+
+    public int getSoundCount() {
+        return ids.length;
     }
 }

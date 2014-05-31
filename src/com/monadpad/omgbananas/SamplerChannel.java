@@ -14,12 +14,17 @@ public class SamplerChannel extends DrumChannel {
 
         mCaptions = new String[] {
                 "bongo l", "bongo h", "click l", "click h", "shhk", "scrape", "woop", "chimes"
-
         };
+        presetNames = new String[] {
+                "PRESET_bongol", "PRESET_bongoh", "PRESET_clickl", "PRESET_clickh",
+                "PRESET_shhk", "PRESET_scrape", "PRESET_woop", "PRESET_chimes"
+        };
+        ids = new int[8];
+
+        kitName = "PRESET_PERCUSSION_SAMPLER";
     }
 
-    public void loadPool() {
-        ids = new int[8];
+    public int loadPool() {
 
         ids[0] = mPool.load(context, R.raw.sampler_8_bongol, 1);
         ids[1] = mPool.load(context, R.raw.sampler_7_bongoh, 1);
@@ -30,22 +35,27 @@ public class SamplerChannel extends DrumChannel {
         ids[6] = mPool.load(context, R.raw.sampler_5_whoop, 1);
         ids[7] = mPool.load(context, R.raw.sampler_3_chimes, 1);
 
+        return ids.length;
     }
 
     public void makeFill() {
 
         clearPattern();
 
+        int fillLevel = rand.nextInt(4);
+
+        if (fillLevel == 0)
+            return;
+
         boolean[][] toms = new boolean[][] {pattern[0], pattern[1], pattern[2],
                                             pattern[3], pattern[4]};
-
-        boolean sparse = rand.nextBoolean();
         boolean on;
         int tom;
         for (int i = 0; i < 16; i++) {
 
-            on = (sparse && rand.nextBoolean()) ||
-                    (!sparse && (rand.nextBoolean() || rand.nextBoolean()));
+            on = (fillLevel == 1 && (rand.nextBoolean() && rand.nextBoolean())) ||
+                 (fillLevel == 2 && rand.nextBoolean()) ||
+                 (fillLevel == 3 && (rand.nextBoolean() || rand.nextBoolean()));
             tom = rand.nextInt(5);
 
             toms[tom][i] = on;

@@ -6,17 +6,19 @@
               android:id="@+id/main_layout"
         >
 
-    <com.monadpad.omgbananas.SlidingFrameLayout android:id="@+id/fragcontainer"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"
-                 >
     <fragment
+        android:id="@+id/welcome_fragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        class="com.monadpad.omgbananas.WelcomeFragment"
+        />
+
+    <!--<fragment
             android:id="@+id/mixerFragment"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             class="com.monadpad.omgbananas.MainFragment" ></fragment>
-
-    </com.monadpad.omgbananas.SlidingFrameLayout>
+    -->
 
 
 </FrameLayout>

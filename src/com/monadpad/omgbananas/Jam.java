@@ -6,6 +6,7 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,8 +27,7 @@ public class Jam {
     private Channel guitarChannel;
     private SamplerChannel samplerChannel;
 
-    private SoundPool pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
-    private boolean soundPoolLoaded = false;
+    private SoundPool pool;
 
     private Context mContext;
 
@@ -48,7 +48,11 @@ public class Jam {
 
     private int currentChord = 0;
 
-    public Jam(Context context) {
+    private int soundsToLoad = 0;
+
+    public Jam(Context context, SoundPool pool) {
+
+        this.pool = pool;
 
         mContext = context;
         mm = new MelodyMaker(mContext);
@@ -59,36 +63,49 @@ public class Jam {
 
     }
 
-    public void makeChannels() {
+    public void makeChannels(final ProgressBar progressBar, final Runnable callback) {
 
         drumChannel = new HipDrumChannel(mContext, pool, this);
         basslineChannel = new BassSamplerChannel(mContext, pool);
         guitarChannel = new ElectricSamplerChannel(mContext, pool);
         samplerChannel = new SamplerChannel(mContext, pool, this);
-
         keyboardChannel = new KeyboardSamplerChannel(mContext, pool);
 
-        if (Build.VERSION.SDK_INT >= 11) {
+
+        soundsToLoad = drumChannel.getSoundCount() +
+                basslineChannel.getSoundCount() +
+                guitarChannel.getSoundCount() +
+                samplerChannel.getSoundCount() +
+                keyboardChannel.getSoundCount();
+        if (progressBar != null) {
+            progressBar.setMax(soundsToLoad);
+        }
+
+        if (Build.VERSION.SDK_INT >= 11 && progressBar != null) {
             pool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                 int loadedSounds = 0;
                 @Override
                 public void onLoadComplete(SoundPool soundPool, int i, int i1) {
                     loadedSounds++;
-                    Log.d("MGH sound pool", Integer.toString(loadedSounds));
+                    progressBar.incrementProgressBy(1);
 
-                    if (loadedSounds == 70) {
-                        soundPoolLoaded = true;
-                        Log.d("MGH sound pool", "loaded");
+                    if (loadedSounds == soundsToLoad) {
+
+                        if (callback != null)
+                            callback.run();
+
                     }
                 }
             });
         }
+
 
         drumChannel.loadPool();
         basslineChannel.loadPool();
         guitarChannel.loadPool();
         samplerChannel.loadPool();
         keyboardChannel.loadPool();
+
     }
 
 
@@ -122,7 +139,7 @@ public class Jam {
             mm.makeMelodyFromMotif(beats);
         }
         else if (rand.nextInt(3) == 0) {
-            // keep the motif
+            // keep the motif, but change melody
             mm.makeMelodyFromMotif(beats);
         }
 
@@ -341,9 +358,9 @@ public class Jam {
 
         playbackThread.i = 0;
 
-        drumChannel.enable();
-        basslineChannel.enable();
-        keyboardChannel.enable();
+        //drumChannel.enable();
+        //basslineChannel.enable();
+        //keyboardChannel.enable();
         //guitarChannel.enable();
     }
 
@@ -435,11 +452,19 @@ public class Jam {
 
         sb.append(", ");
 
+        samplerChannel.getData(sb);
+
+        sb.append(", ");
+
         getBasslineData(sb);
 
         sb.append(", ");
 
         getSynthData(sb);
+
+        sb.append(", ");
+
+        getElectricData(sb);
 
         sb.append(", ");
 
@@ -515,6 +540,39 @@ public class Jam {
         sb.append("]}");
 
     }
+
+    public void getElectricData(StringBuilder sb) {
+
+        sb.append("{\"type\" : \"MELODY\", \"sound\": \"PRESET_GUITAR1\", \"scale\": \"");
+        sb.append(mm.getScale());
+        sb.append("\", \"key\": ");
+        sb.append(mm.getKey());
+        sb.append(", \"notes\" : [");
+
+        boolean first = true;
+
+        for (Note note : guitarChannel.getNotes().list) {
+            if (first)
+                first = false;
+            else
+                sb.append(", ");
+
+            sb.append("{\"rest\": ");
+            sb.append(note.isRest());
+            sb.append(", \"beats\": ");
+            sb.append(note.getBeats());
+            if (!note.isRest()) {
+                sb.append(", \"scaledNote\" :");
+                sb.append(note.getNote());
+                sb.append(", \"note\" :");
+                sb.append(note.getNakedNote());
+            }
+            sb.append("}");
+        }
+        sb.append("]}");
+
+    }
+
 
     public void getChordsData(StringBuilder sb) {
 

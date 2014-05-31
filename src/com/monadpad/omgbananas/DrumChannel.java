@@ -311,10 +311,10 @@ public abstract class DrumChannel extends Channel {
     public void getData(StringBuilder sb) {
 
         int totalBeats = beats * subbeats;
-        sb.append("{\"type\" : \"DRUMBEAT\", \"kit\": ");
+        sb.append("{\"type\" : \"DRUMBEAT\", \"kit\": \"");
         sb.append(kitName);
 
-        sb.append(", \"data\": [");
+        sb.append("\", \"data\": [");
 
         for (int p = 0; p < pattern.length; p++) {
             sb.append("{\"name\": \"");

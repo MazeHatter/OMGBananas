@@ -17,12 +17,12 @@ public class ElectricSamplerChannel extends Channel {
         highNote = 85;
         lowNote = 40;
 
-        volume = 0.2f;
+        volume = 0.15f;
+        ids = new int[46];
 
     }
 
-    public void loadPool() {
-        ids = new int[46];
+    public int loadPool() {
         int i= 0;
 
         ids[i++] = mPool.load(context, R.raw.electric_e, 1);
@@ -72,6 +72,7 @@ public class ElectricSamplerChannel extends Channel {
         ids[i++] = mPool.load(context, R.raw.electric_c4, 1);
         ids[i++] = mPool.load(context, R.raw.electric_cs4, 1);
 
+        return ids.length;
     }
 
 }

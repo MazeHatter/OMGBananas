@@ -17,11 +17,11 @@ public class KeyboardSamplerChannel extends Channel {
         highNote = 69;
         lowNote = 9;
 
-        volume = 0.3f;
+        volume = 0.2f;
+        ids = new int[61];
     }
 
-    public void loadPool() {
-        ids = new int[61];
+    public int loadPool() {
         int i= 0;
 
         ids[i++] = mPool.load(context, R.raw.kb1_a1, 1);
@@ -86,17 +86,6 @@ public class KeyboardSamplerChannel extends Channel {
         ids[i++] = mPool.load(context, R.raw.kb1_gs6, 1);
         ids[i++] = mPool.load(context, R.raw.kb1_a6, 1);
 
-
-    }
-
-
-
-    public void mute() {
-
-        if (playingId > -1) {
-            mPool.stop(playingId);
-            playingId = -1;
-        }
-
+        return ids.length;
     }
 }

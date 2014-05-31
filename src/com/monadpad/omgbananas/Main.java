@@ -1,9 +1,13 @@
 package com.monadpad.omgbananas;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -11,20 +15,19 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 public class Main extends FragmentActivity {
 
     Jam mJam;
 
-    View chordControls;
-
     boolean mainBananaClicked = false;
-
 
     private final static int DIALOG_TAGS = 11;
 
     private OMGHelper omgHelper;
 
+    private SoundPool pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,19 +42,28 @@ public class Main extends FragmentActivity {
 
         setContentView(R.layout.main);
 
-        mJam = new Jam(this);
+        mJam = new Jam(this, pool);
 
+        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progress);
 
-        ((MainFragment)getSupportFragmentManager().findFragmentById(R.id.mixerFragment)).setJam(mJam);
+        final Runnable callback = new Runnable() {
+            @Override
+            public void run() {
+                MainFragment mainFragment = new MainFragment(mJam);
+                showFragment(mainFragment);
 
-        setupMainBanana();
+                //new Welcome(this);
 
-//        setupChordsPanel();
+            }
+        };
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mJam.makeChannels(progressBar, callback);
+            }
+        }).start();
 
-        new MakeChannelsAndPlay().execute();
-
-        new Welcome(this);
 
         //headbob = new HeadBob((ImageView)mLibenizView.findViewById(R.id.libeniz_head));
         //headbob.start(500);
@@ -100,77 +112,8 @@ public class Main extends FragmentActivity {
     }
 
 
-    private void setupMainBanana() {
-
-        final ImageView mainBanana = (ImageView)findViewById(R.id.main_banana);
-        mainBanana.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (mainBananaClicked) {
-                    mainBananaClicked = false;
-
-                    mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.banana48));
-
-                    showDialog(11);
-
-                }
-                else {
-                    mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.add_tag_white));
-                    mainBananaClicked = true;
-
-                    mainBanana.clearAnimation();
-
-                    omgHelper = new OMGHelper(Main.this, OMGHelper.Type.SECTION,
-                            mJam.getData());
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                            }
-                            if (mainBananaClicked) {
-
-                                mainBananaClicked = false;
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showBanana(mainBanana);
-                                    }
-                                });
-
-                                omgHelper.submitWithTags("");
-
-                            }
-
-                        }
-                    }).start();
-                }
-            }
-        });
-
-    }
 
 
-
-
-    public void setupChordsPanel() {
-//        chordControls = findViewById(R.id.chords);
-
-        chordControls.findViewById(R.id.libeniz_head).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mJam.monkeyWithChords();
-                Animation turnin = AnimationUtils.loadAnimation(Main.this, R.anim.rotate);
-                view.startAnimation(turnin);
-
-            }
-        });
-    }
 
 
     private void showBanana(ImageView view) {
@@ -182,14 +125,20 @@ public class Main extends FragmentActivity {
     }
 
 
-    class MakeChannelsAndPlay extends AsyncTask<Void, Void, Void> {
+    public void showFragment(Fragment f) {
 
-        public Void doInBackground(Void... v) {
 
-            mJam.makeChannels();
-
-            return null;
-        }
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_right,
+                R.anim.slide_out_left,
+                R.anim.slide_in_left,
+                R.anim.slide_out_right
+        );
+        ft.add(R.id.main_layout, f);
+        ft.hide(getSupportFragmentManager().findFragmentById(R.id.welcome_fragment));
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        ft.commit();
 
     }
 

@@ -19,10 +19,10 @@ public class BassSamplerChannel extends Channel {
         lowNote = 28;
 
         volume = 0.8f;
+        ids = new int[21];
     }
 
-    public void loadPool() {
-        ids = new int[21];
+    public int loadPool() {
         int i= 0;
 
         ids[i++] = mPool.load(context, R.raw.bass_e, 1);
@@ -47,6 +47,7 @@ public class BassSamplerChannel extends Channel {
         ids[i++] = mPool.load(context, R.raw.bass_b2, 1);
         ids[i++] = mPool.load(context, R.raw.bass_c2, 1);
 
+        return ids.length;
     }
 
 }

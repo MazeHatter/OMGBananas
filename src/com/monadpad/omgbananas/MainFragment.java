@@ -51,11 +51,9 @@ public class MainFragment extends OMGFragment {
 
 
 
-    public void setJam(Jam jam) {
+    public MainFragment(Jam jam) {
         mJam = jam;
 
-        mChordsButton.setJam((Main)getActivity(), jam);
-        jam.addInvalidateOnNewMeasureListener(mChordsButton);
     }
 
     @Override
@@ -309,6 +307,10 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        mChordsButton.setJam((Main)getActivity(), mJam);
+        mJam.addInvalidateOnNewMeasureListener(mChordsButton);
+
+
     }
 
     public void showFragment(Fragment f) {
@@ -320,7 +322,7 @@ public class MainFragment extends OMGFragment {
                 R.anim.slide_in_left,
                 R.anim.slide_out_right
         );
-        ft.add(R.id.fragcontainer, f);
+        ft.add(R.id.main_layout, f);
         ft.hide(MainFragment.this);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.addToBackStack(null);
@@ -359,12 +361,81 @@ public class MainFragment extends OMGFragment {
                 synthMonkeyHead.startAnimation(turnin);
                 bassMonkeyHead.startAnimation(turnin);
                 guitarMonkeyHead.startAnimation(turnin);
+                samplerMonkeyHead.startAnimation(turnin);
 
                 updateUI();
             }
         });
 
+        setupMainBanana();
+
     }
+
+    private void setupMainBanana() {
+
+        final ImageView mainBanana = (ImageView) mView.findViewById(R.id.main_banana);
+        mainBanana.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                OMGHelper omgHelper = new OMGHelper(getActivity(), OMGHelper.Type.SECTION,
+                        mJam.getData());
+                omgHelper.submitWithTags("");
+
+                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                view.startAnimation(turnin);
+
+                /*
+
+                if (mainBananaClicked) {
+                    mainBananaClicked = false;
+
+                    mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.banana48));
+
+                    showDialog(11);
+
+                }
+                else {
+                    mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.add_tag_white));
+                    mainBananaClicked = true;
+
+                    mainBanana.clearAnimation();
+
+                    omgHelper = new OMGHelper(Main.this, OMGHelper.Type.SECTION,
+                            mJam.getData());
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                            }
+                            if (mainBananaClicked) {
+
+                                mainBananaClicked = false;
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showBanana(mainBanana);
+                                    }
+                                });
+
+                                omgHelper.submitWithTags("");
+
+                            }
+
+                        }
+                    }).start();
+                }
+        */
+            }
+        });
+
+    }
+
 
     private void play() {
         if (!mJam.isPlaying()) {
@@ -380,9 +451,11 @@ public class MainFragment extends OMGFragment {
     }
 
     public void updateUI() {
-        updateKeyUI();
-        updateBPMUI();
-        mChordsButton.invalidate();
+        if (mChordsButton != null) {
+            updateKeyUI();
+            updateBPMUI();
+            mChordsButton.invalidate();
+        }
 
     }
 
