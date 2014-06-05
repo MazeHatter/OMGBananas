@@ -27,7 +27,7 @@ public class Jam {
     private Channel guitarChannel;
     private SamplerChannel samplerChannel;
 
-    private SoundPool pool;
+    private OMGSoundPool pool;
 
     private Context mContext;
 
@@ -50,7 +50,9 @@ public class Jam {
 
     private int soundsToLoad = 0;
 
-    public Jam(Context context, SoundPool pool) {
+    private boolean soundPoolInitialized = false;
+
+    public Jam(Context context, OMGSoundPool pool) {
 
         this.pool = pool;
 
@@ -65,6 +67,9 @@ public class Jam {
 
     public void makeChannels(final ProgressBar progressBar, final Runnable callback) {
 
+        boolean usingListener = false;
+        boolean updatePB = false;
+
         drumChannel = new HipDrumChannel(mContext, pool, this);
         basslineChannel = new BassSamplerChannel(mContext, pool);
         guitarChannel = new ElectricSamplerChannel(mContext, pool);
@@ -77,11 +82,10 @@ public class Jam {
                 guitarChannel.getSoundCount() +
                 samplerChannel.getSoundCount() +
                 keyboardChannel.getSoundCount();
-        if (progressBar != null) {
-            progressBar.setMax(soundsToLoad);
-        }
 
         if (Build.VERSION.SDK_INT >= 11 && progressBar != null) {
+            usingListener = true;
+            progressBar.setMax(soundsToLoad);
             pool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                 int loadedSounds = 0;
                 @Override
@@ -100,12 +104,32 @@ public class Jam {
         }
 
 
-        drumChannel.loadPool();
-        basslineChannel.loadPool();
-        guitarChannel.loadPool();
-        samplerChannel.loadPool();
-        keyboardChannel.loadPool();
+        if (!usingListener) {
+            updatePB = progressBar != null;
+            if (updatePB)
+                progressBar.setMax(5);
+        }
 
+        drumChannel.loadPool();
+        if (updatePB) progressBar.incrementProgressBy(1);
+
+        basslineChannel.loadPool();
+        if (updatePB) progressBar.incrementProgressBy(1);
+
+        guitarChannel.loadPool();
+        if (updatePB) progressBar.incrementProgressBy(1);
+
+        samplerChannel.loadPool();
+        if (updatePB) progressBar.incrementProgressBy(1);
+
+        keyboardChannel.loadPool();
+        if (updatePB) progressBar.incrementProgressBy(1);
+
+        if (!usingListener) {
+            callback.run();
+        }
+
+        soundPoolInitialized = true;
     }
 
 
@@ -742,5 +766,9 @@ public class Jam {
 
     public void makeDrumbeatFromMelody() {
         drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes().list);
+    }
+
+    public boolean isSoundPoolInitialized() {
+        return soundPoolInitialized;
     }
 }

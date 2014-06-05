@@ -28,9 +28,10 @@ public abstract class Channel {
 
     protected int playingI = 0;
 
-    protected SoundPool mPool;
+    protected OMGSoundPool mPool;
 
     protected int[] ids;
+    protected int[] rids;
 
     protected int playingId = -1;
 
@@ -38,7 +39,7 @@ public abstract class Channel {
 
     protected float volume;
 
-    public Channel(Context context, SoundPool pool) {
+    public Channel(Context context, OMGSoundPool pool) {
         mPool = pool;
         this.context = context;
     }
@@ -108,7 +109,18 @@ public abstract class Channel {
 
     }
 
-    abstract public int loadPool();
+    public int loadPool() {
+        ids = new int[rids.length];
+        for (int i = 0; i < rids.length; i++) {
+
+            ids[i] = mPool.load(context, rids[i], 1);
+
+            if (mPool.isCanceled())
+                return -1;
+
+        }
+        return ids.length;
+    }
 
 
     public int getHighNote() {
@@ -172,6 +184,6 @@ public abstract class Channel {
     }
 
     public int getSoundCount() {
-        return ids.length;
+        return rids.length;
     }
 }

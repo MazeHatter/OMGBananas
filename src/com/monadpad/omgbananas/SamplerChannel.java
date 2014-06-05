@@ -5,7 +5,7 @@ import android.media.SoundPool;
 
 public class SamplerChannel extends DrumChannel {
 
-    public SamplerChannel(Context context, SoundPool pool, Jam jam) {
+    public SamplerChannel(Context context, OMGSoundPool pool, Jam jam) {
         super(context, pool, jam);
 
         isAScale = false;
@@ -19,23 +19,19 @@ public class SamplerChannel extends DrumChannel {
                 "PRESET_bongol", "PRESET_bongoh", "PRESET_clickl", "PRESET_clickh",
                 "PRESET_shhk", "PRESET_scrape", "PRESET_woop", "PRESET_chimes"
         };
-        ids = new int[8];
+        rids = new int[8];
 
         kitName = "PRESET_PERCUSSION_SAMPLER";
-    }
+    
+        rids[0] = R.raw.sampler_8_bongol;
+        rids[1] = R.raw.sampler_7_bongoh;
+        rids[2] = R.raw.sampler_1_click;
+        rids[3] = R.raw.sampler_2_click;
+        rids[4] = R.raw.sampler_6_shhk;
+        rids[5] = R.raw.sampler_4_scrape;
+        rids[6] = R.raw.sampler_5_whoop;
+        rids[7] = R.raw.sampler_3_chimes;
 
-    public int loadPool() {
-
-        ids[0] = mPool.load(context, R.raw.sampler_8_bongol, 1);
-        ids[1] = mPool.load(context, R.raw.sampler_7_bongoh, 1);
-        ids[2] = mPool.load(context, R.raw.sampler_1_click, 1);
-        ids[3] = mPool.load(context, R.raw.sampler_2_click, 1);
-        ids[4] = mPool.load(context, R.raw.sampler_6_shhk, 1);
-        ids[5] = mPool.load(context, R.raw.sampler_4_scrape, 1);
-        ids[6] = mPool.load(context, R.raw.sampler_5_whoop, 1);
-        ids[7] = mPool.load(context, R.raw.sampler_3_chimes, 1);
-
-        return ids.length;
     }
 
     public void makeFill() {

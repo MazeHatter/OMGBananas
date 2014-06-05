@@ -28,7 +28,7 @@ public abstract class DrumChannel extends Channel {
 
     protected String kitName = "";
 
-    public DrumChannel(Context context, SoundPool pool, Jam jam) {
+    public DrumChannel(Context context, OMGSoundPool pool, Jam jam) {
         super(context, pool);
 
         rand = jam.getRand();

@@ -11,68 +11,64 @@ import android.media.SoundPool;
 public class ElectricSamplerChannel extends Channel {
 
 
-    public ElectricSamplerChannel(Context context, SoundPool pool) {
+    public ElectricSamplerChannel(Context context, OMGSoundPool pool) {
         super(context, pool);
 
         highNote = 85;
         lowNote = 40;
 
         volume = 0.15f;
-        ids = new int[46];
+        rids = new int[46];
 
-    }
-
-    public int loadPool() {
         int i= 0;
 
-        ids[i++] = mPool.load(context, R.raw.electric_e, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_f, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_fs, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_g, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_gs, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_a, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_bf, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_b, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_c, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_cs, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_d, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_ds, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_e2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_f2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_fs2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_g2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_gs2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_a2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_bf2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_b2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_c2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_cs2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_d2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_ds2, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_e3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_f3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_fs3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_g3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_gs3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_a3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_bf3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_b3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_c3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_cs3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_d3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_ds3, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_e4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_f4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_fs4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_g4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_gs4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_a4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_bf4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_b4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_c4, 1);
-        ids[i++] = mPool.load(context, R.raw.electric_cs4, 1);
+        rids[i++] = R.raw.electric_e;
+        rids[i++] = R.raw.electric_f;
+        rids[i++] = R.raw.electric_fs;
+        rids[i++] = R.raw.electric_g;
+        rids[i++] = R.raw.electric_gs;
+        rids[i++] = R.raw.electric_a;
+        rids[i++] = R.raw.electric_bf;
+        rids[i++] = R.raw.electric_b;
+        rids[i++] = R.raw.electric_c;
+        rids[i++] = R.raw.electric_cs;
+        rids[i++] = R.raw.electric_d;
+        rids[i++] = R.raw.electric_ds;
+        rids[i++] = R.raw.electric_e2;
+        rids[i++] = R.raw.electric_f2;
+        rids[i++] = R.raw.electric_fs2;
+        rids[i++] = R.raw.electric_g2;
+        rids[i++] = R.raw.electric_gs2;
+        rids[i++] = R.raw.electric_a2;
+        rids[i++] = R.raw.electric_bf2;
+        rids[i++] = R.raw.electric_b2;
+        rids[i++] = R.raw.electric_c2;
+        rids[i++] = R.raw.electric_cs2;
+        rids[i++] = R.raw.electric_d2;
+        rids[i++] = R.raw.electric_ds2;
+        rids[i++] = R.raw.electric_e3;
+        rids[i++] = R.raw.electric_f3;
+        rids[i++] = R.raw.electric_fs3;
+        rids[i++] = R.raw.electric_g3;
+        rids[i++] = R.raw.electric_gs3;
+        rids[i++] = R.raw.electric_a3;
+        rids[i++] = R.raw.electric_bf3;
+        rids[i++] = R.raw.electric_b3;
+        rids[i++] = R.raw.electric_c3;
+        rids[i++] = R.raw.electric_cs3;
+        rids[i++] = R.raw.electric_d3;
+        rids[i++] = R.raw.electric_ds3;
+        rids[i++] = R.raw.electric_e4;
+        rids[i++] = R.raw.electric_f4;
+        rids[i++] = R.raw.electric_fs4;
+        rids[i++] = R.raw.electric_g4;
+        rids[i++] = R.raw.electric_gs4;
+        rids[i++] = R.raw.electric_a4;
+        rids[i++] = R.raw.electric_bf4;
+        rids[i++] = R.raw.electric_b4;
+        rids[i++] = R.raw.electric_c4;
+        rids[i++] = R.raw.electric_cs4;
 
-        return ids.length;
     }
 
 }

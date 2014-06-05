@@ -322,8 +322,8 @@ public class MainFragment extends OMGFragment {
                 R.anim.slide_in_left,
                 R.anim.slide_out_right
         );
-        ft.add(R.id.main_layout, f);
-        ft.hide(MainFragment.this);
+        //ft.remove(MainFragment.this);
+        ft.replace(R.id.main_layout, f);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.addToBackStack(null);
         ft.commit();

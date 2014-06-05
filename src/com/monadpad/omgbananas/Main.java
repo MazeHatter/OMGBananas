@@ -1,5 +1,6 @@
 package com.monadpad.omgbananas;
 
+import android.bluetooth.BluetoothAdapter;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.support.v4.app.Fragment;
@@ -27,12 +28,13 @@ public class Main extends FragmentActivity {
 
     private OMGHelper omgHelper;
 
-    private SoundPool pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
+    private OMGSoundPool pool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        BluetoothAdapter.getDefaultAdapter();
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
@@ -42,27 +44,12 @@ public class Main extends FragmentActivity {
 
         setContentView(R.layout.main);
 
+
         mJam = new Jam(this, pool);
 
-        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progress);
-
-        final Runnable callback = new Runnable() {
-            @Override
-            public void run() {
-                MainFragment mainFragment = new MainFragment(mJam);
-                showFragment(mainFragment);
-
-                //new Welcome(this);
-
-            }
-        };
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mJam.makeChannels(progressBar, callback);
-            }
-        }).start();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.main_layout, new WelcomeFragment(mJam));
+        ft.commit();
 
 
         //headbob = new HeadBob((ImageView)mLibenizView.findViewById(R.id.libeniz_head));
@@ -121,24 +108,6 @@ public class Main extends FragmentActivity {
 
         Animation turnin = AnimationUtils.loadAnimation(this, R.anim.rotate);
         view.startAnimation(turnin);
-
-    }
-
-
-    public void showFragment(Fragment f) {
-
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.slide_in_right,
-                R.anim.slide_out_left,
-                R.anim.slide_in_left,
-                R.anim.slide_out_right
-        );
-        ft.add(R.id.main_layout, f);
-        ft.hide(getSupportFragmentManager().findFragmentById(R.id.welcome_fragment));
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
 
     }
 

@@ -1,6 +1,8 @@
 package com.monadpad.omgbananas;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,15 +10,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-/**
- * User: m
- * Date: 5/6/14
- * Time: 7:11 PM
- */
 public class WelcomeFragment extends OMGFragment {
 
     private View mView;
 
+    private Jam mJam;
+
+    public WelcomeFragment(Jam jam) {
+        mJam = jam;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -24,9 +26,95 @@ public class WelcomeFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.welcome,
                 container, false);
 
+        if (!mJam.isSoundPoolInitialized()) {
+            setupSoundPool();
+        }
+        else {
+            hideWelcome();
+        }
+
+        mView.findViewById(R.id.return_to_omg_bananas).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainFragment mainFragment = new MainFragment(mJam);
+                showFragment(mainFragment);
+            }
+        });
+
+
+        mView.findViewById(R.id.bt_remote).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                BluetoothFragment f = new BluetoothFragment();
+
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.anim.slide_in_up,
+                        R.anim.slide_out_up,
+                        R.anim.slide_in_down,
+                        R.anim.slide_out_down
+                );
+                ft.add(R.id.main_layout, f);
+                ft.remove(WelcomeFragment.this);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                ft.addToBackStack(null);
+                ft.commit();
+
+            }
+        });
 
 
         return mView;
     }
 
+    public void showFragment(Fragment f) {
+
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_right,
+                R.anim.slide_out_left,
+                R.anim.slide_in_left,
+                R.anim.slide_out_right
+        );
+        ft.replace(R.id.main_layout, f);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
+
+    private void setupSoundPool() {
+        final ProgressBar progressBar = (ProgressBar)mView.findViewById(R.id.loading_progress);
+
+        final Runnable callback = new Runnable() {
+            @Override
+            public void run() {
+                MainFragment mainFragment = new MainFragment(mJam);
+                showFragment(mainFragment);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideWelcome();
+                    }
+                });
+
+            }
+        };
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mJam.makeChannels(progressBar, callback);
+            }
+        }).start();
+
+
+    }
+
+    private void hideWelcome() {
+        mView.findViewById(R.id.welcome_info).setVisibility(View.GONE);
+        mView.findViewById(R.id.goback).setVisibility(View.VISIBLE);
+
+    }
 }

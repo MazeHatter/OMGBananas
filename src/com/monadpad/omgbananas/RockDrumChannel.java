@@ -1,11 +1,10 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
 
 public class RockDrumChannel extends DrumChannel {
 
-    public RockDrumChannel(Context context, SoundPool pool, Jam jam) {
+    public RockDrumChannel(Context context, OMGSoundPool pool, Jam jam) {
         super(context, pool, jam);
 
         isAScale = false;
@@ -25,23 +24,18 @@ public class RockDrumChannel extends DrumChannel {
                 "crash", "h tom", "m tom", "l tom"};
 
         kitName = "PRESET_ROCKKIT";
-        ids = new int[8];
+        rids = new int[8];
 
-    }
-
-    public int loadPool() {
         int i= 0;
 
-        ids[i++] = mPool.load(context, R.raw.rock_kick, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_snare, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_hithat_med, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_hihat_open, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_crash, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_tom_mh, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_tom_ml, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_tom_l, 1);
-
-        return ids.length;
+        rids[i++] = R.raw.rock_kick;
+        rids[i++] = R.raw.rock_snare;
+        rids[i++] = R.raw.rock_hithat_med;
+        rids[i++] = R.raw.rock_hihat_open;
+        rids[i++] = R.raw.rock_crash;
+        rids[i++] = R.raw.rock_tom_mh;
+        rids[i++] = R.raw.rock_tom_ml;
+        rids[i++] = R.raw.rock_tom_l;
     }
 
 }

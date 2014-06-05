@@ -5,28 +5,25 @@ import android.media.SoundPool;
 
 public class HipDrumChannel extends DrumChannel {
 
-    public int loadPool() {
-        int i= 0;
-
-        ids[i++] = mPool.load(context, R.raw.hh_kick, 1);
-        ids[i++] = mPool.load(context, R.raw.hh_clap, 1);
-        ids[i++] = mPool.load(context, R.raw.rock_hithat_closed, 1);
-        ids[i++] = mPool.load(context, R.raw.hh_hihat, 1);
-        ids[i++] = mPool.load(context, R.raw.hh_tamb, 1);
-        ids[i++] = mPool.load(context, R.raw.hh_tom_mh, 1);
-        ids[i++] = mPool.load(context, R.raw.hh_tom_ml, 1);
-        ids[i++] = mPool.load(context, R.raw.hh_tom_l, 1);
-
-        return ids.length;
-    }
-
-    public HipDrumChannel(Context context, SoundPool pool, Jam jam) {
+    public HipDrumChannel(Context context, OMGSoundPool pool, Jam jam) {
         super(context, pool, jam);
 
         isAScale = false;
         highNote = 7;
         lowNote = 0;
-        ids = new int[8];
+        rids = new int[8];
+
+        int i= 0;
+
+        rids[i++] = R.raw.hh_kick;
+        rids[i++] = R.raw.hh_clap;
+        rids[i++] = R.raw.rock_hithat_closed;
+        rids[i++] = R.raw.hh_hihat;
+        rids[i++] = R.raw.hh_tamb;
+        rids[i++] = R.raw.hh_tom_mh;
+        rids[i++] = R.raw.hh_tom_ml;
+        rids[i++] = R.raw.hh_tom_l;
+
 
         presetNames = new String[] {
                 "PRESET_HH_KICK",

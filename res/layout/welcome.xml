@@ -1,56 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:gravity="center"
-              android:orientation="vertical">
-    <ImageView
-        android:src="@drawable/banana48"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <Button android:text="Be a Bluetooth Remote"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/bluetooth"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bt_remote"></Button>
 
-    <TextView android:text="Press to Save"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:id="@+id/txt_press_banana"
-        android:textSize="22sp"
-        android:gravity="center"
-        />
-    <ImageView
-        android:layout_marginTop="10dip"
-        android:src="@drawable/icon48"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView android:text="Press to Change"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_below="@id/txt_press_banana"
-        android:textSize="22sp"
-        android:id="@+id/txt_press_monkey"
-        android:gravity="center"
-        />
 
-    <TextView android:text="OMG Bananas!"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:id="@+id/bpm_caption"
-        android:textSize="48sp"
-        android:layout_below="@id/txt_press_monkey"
-        android:gravity="center"
-        android:padding="8dip"
-        android:layout_marginTop="10dip"
-        />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/loading_progress"
-        android:layout_below="@id/bpm_caption"/>
+        android:layout_alignParentTop="true"/>
 
-</LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/bt_remote"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:id="@+id/goback"
+        android:visibility="gone">
+
+        <Button android:text="Return to OMG Bananas"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/ic_media_next"
+            android:id="@+id/return_to_omg_bananas"></Button>
+
+        <TextView android:text="Press Back again to Exit"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:id="@+id/txt_press_back"
+            android:textSize="22sp"
+            android:gravity="center"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/bt_remote"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:id="@+id/welcome_info">
+        <ImageView
+            android:src="@drawable/banana48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Press to Save"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/txt_press_banana"
+            android:textSize="22sp"
+            android:gravity="center"
+            />
+        <ImageView
+            android:layout_marginTop="10dip"
+            android:src="@drawable/icon48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView android:text="Press to Change"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_below="@id/txt_press_banana"
+            android:textSize="22sp"
+            android:id="@+id/txt_press_monkey"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+</RelativeLayout>
