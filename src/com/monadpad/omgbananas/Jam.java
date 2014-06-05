@@ -67,6 +67,11 @@ public class Jam {
 
     public void makeChannels(final ProgressBar progressBar, final Runnable callback) {
 
+        pool.allowLoading();
+        if (progressBar != null) {
+            progressBar.setProgress(0);
+        }
+
         boolean usingListener = false;
         boolean updatePB = false;
 
@@ -110,19 +115,19 @@ public class Jam {
                 progressBar.setMax(5);
         }
 
-        drumChannel.loadPool();
+        if (drumChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
-        basslineChannel.loadPool();
+        if (basslineChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
-        guitarChannel.loadPool();
+        if (guitarChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
-        samplerChannel.loadPool();
+        if (samplerChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
-        keyboardChannel.loadPool();
+        if (keyboardChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
         if (!usingListener) {
@@ -315,8 +320,8 @@ public class Jam {
         basslineChannel.mute();
         guitarChannel.mute();
         samplerChannel.mute();
-        //pool.release();
-        //pool = null;
+        //mPool.release();
+        //mPool = null;
     }
 
 

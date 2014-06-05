@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bt_status"
+            android:textColor="#4fa5d5"
+            android:gravity="center"
+            android:textSize="28sp"
+            android:layout_marginTop="10dip"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:text="Bluetooth is OFF"
+            />
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/device"
+                android:text="(Not connected)"
+                android:id="@+id/bt_device_1"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/device"
+                android:text="(Not connected)"
+                android:id="@+id/bt_device_2"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/device"
+                android:text="(Not connected)"
+                android:id="@+id/bt_device_3"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/device"
+                android:text="(Not connected)"
+                android:visibility="gone"/>
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/device"
+                android:text="(Not connected)"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paired Devices:"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/paired_devices"
+            />
+
+        <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+        </ListView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pair this device with another device. \n
+                            Place the other device in Remote Mode"
+            />
+
+</LinearLayout>

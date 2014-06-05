@@ -27,6 +27,7 @@ public class BluetoothFactory {
     public static final String STATUS_ACCEPTING_CONNECTIONS = "Accepting Connections";
     public static final String STATUS_CONNECTING_TO = "Connecting to ";
     public static final String STATUS_IO_CONNECT_THREAD  = "IOException in ConnectThread";
+    public static final String STATUS_BLUETOOTH_TURNED_ON = "Bluetooth has been turned on";
     public static final int REQUEST_ENABLE_BT = 2;
 
     private static final String NAME = "OMG BANANAS";
@@ -35,7 +36,7 @@ public class BluetoothFactory {
     private static final int MESSAGE_READ = 0;
     public static final int MESSAGE_STATUS = 1;
     private AcceptThread acceptThread;
-    private final Context ctx;
+    private final Activity ctx;
 
     private final static String TAG = "MGH Bluetooth";
 
@@ -57,44 +58,85 @@ public class BluetoothFactory {
 
     private Activity mCallingActivity;
 
-    public BluetoothFactory(Activity context, BluetoothStatusCallback statusCallback) {
+    private boolean isSetup = false;
 
-        this.statusCallback = statusCallback;
+    public BluetoothFactory(Activity context) {
         ctx = context;
-
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
+    }
+
+    public boolean setup(BluetoothStatusCallback callback) {
+
+        // for the receiver
+        statusCallback = callback;
+
         if (mBluetooth == null){
-            newStatus("Bluetooth is not available.", -1);
-            return;
+            newStatus(callback, "Bluetooth is not available", -1);
+            return false;
         }
 
         if (!mBluetooth.isEnabled()){
 
-            newStatus("Bluetooth is not on.", -1);
+            newStatus(callback, "Bluetooth is off", -1);
 
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            context.startActivityForResult(enableBT, REQUEST_ENABLE_BT);
+            ctx.startActivityForResult(enableBT, REQUEST_ENABLE_BT);
             ctx.registerReceiver(btStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
         }
         else {
-            newStatus("Bluetooth is on.", -1);
+            isSetup = true;
         }
 
+        return isSetup;
     }
 
 
-    public void startAccepting() {
+    public void startAccepting(final BluetoothStatusCallback callback) {
 
+        // a new callback to relay the old one, plus a few things
+
+        if (isSetup || setup(new BluetoothStatusCallback() {
+                @Override
+                public void newStatus(String status, int deviceI) {
+                    callback.newStatus(status, deviceI);
+
+                    if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                        isSetup = true;
+                        startAccepting(callback);
+                    }
+                }
+
+                @Override
+                public void newData(String data, int deviceI) {
+                    callback.newData(data, deviceI);
+                }
+
+                @Override
+                public void onConnected(BluetoothFactory.ConnectedThread connection) {
+                    callback.onConnected(connection);
+                }
+            })) {
+
+            newStatus(callback, STATUS_BLUETOOTH_TURNED_ON, -1);
+        }
+        else {
+
+            // wait for the  bluetooth to turn on
+            return;
+        }
+
+
+        statusCallback = callback;
         isServer = true;
 
-        newStatus(STATUS_ACCEPTING_CONNECTIONS, -1);
+        newStatus(statusCallback, STATUS_ACCEPTING_CONNECTIONS, -1);
 
         acceptThread = new AcceptThread();
         acceptThread.start();
     }
 
-    public void toggleDeviceStatus(int deviceI) {
+    /*public void toggleDeviceStatus(int deviceI) {
 
         if (deviceI < 0 && deviceI > isConnected.length)
             return;
@@ -109,7 +151,7 @@ public class BluetoothFactory {
                 currentDeviceI++;
             }
 
-            newStatus(STATUS_CONNECTING_TO + device.getName(), deviceI);
+            newStatus(statusCallback, STATUS_CONNECTING_TO + device.getName(), deviceI);
             new ConnectThread(device, deviceI).start();
         }
         else {
@@ -125,7 +167,7 @@ public class BluetoothFactory {
                 }
             }
         }
-    }
+    }*/
 
 
     private class AcceptThread extends Thread{
@@ -138,7 +180,7 @@ public class BluetoothFactory {
                     tmp =  mBluetooth.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
 
                 }    catch (IOException e) {
-                    newStatus("IOException in listenUsingRfcomm", -1);
+                    newStatus(statusCallback, "IOException in listenUsingRfcomm", -1);
                 }
                 mServerSocket = tmp;
             }
@@ -152,13 +194,13 @@ public class BluetoothFactory {
                     socket = mServerSocket.accept();
                 } catch (IOException e){
                     if (!cleaningUp)
-                        newStatus("IOException in accept()", -1);
+                        newStatus(statusCallback, "IOException in accept()", -1);
 
                     break;
                 }
 
                 if (socket != null){
-                    readSocket(socket, devices++);
+                    readSocket(socket, statusCallback);
                 }
 
             }
@@ -166,7 +208,36 @@ public class BluetoothFactory {
 
     }
 
-    public void connect() {
+    public void connectToPairedDevices(final BluetoothStatusCallback callback) {
+
+        if (isSetup ||setup(new BluetoothStatusCallback() {
+                @Override
+                public void newStatus(String status, int deviceI) {
+                    callback.newStatus(status, deviceI);
+
+                    if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                        isSetup = true;
+                        connectToPairedDevices(callback);
+                    }
+                }
+
+                @Override
+                public void newData(String data, int deviceI) {
+                    callback.newData(data, deviceI);
+                }
+
+                @Override
+                public void onConnected(ConnectedThread connection) {
+                    callback.onConnected(connection);
+                }
+                })) {
+            newStatus(callback, STATUS_BLUETOOTH_TURNED_ON, -1);
+        }
+        else {
+            // wait for the  bluetooth to turn on
+            return;
+        }
+
 
         devices = 0;
 
@@ -174,24 +245,28 @@ public class BluetoothFactory {
         Iterator<BluetoothDevice> iterator = paired.iterator();
         while (iterator.hasNext()) {
             BluetoothDevice device = iterator.next();
-            newStatus(STATUS_CONNECTING_TO + device.getName(), devices);
-            new ConnectThread(device, devices).start();
+            newStatus(callback, STATUS_CONNECTING_TO + device.getName(), devices);
+
+            new ConnectThread(device, devices, callback).start();
             devices++;
         }
     }
 
+
     private class ConnectThread extends Thread {
         BluetoothSocket mSocket;
         int deviceI = 0;
+        BluetoothStatusCallback mConnectCallback;
 
-        public ConnectThread(BluetoothDevice device, int deviceI) {
+        public ConnectThread(BluetoothDevice device, int deviceI, BluetoothStatusCallback callback) {
             this.deviceI = deviceI;
+            mConnectCallback = callback;
             BluetoothSocket tmp = null;
 
             try {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
             } catch (IOException e) {
-                newStatus("IOException in createRfcommSocket", deviceI);
+                newStatus(mConnectCallback, "IOException in createRfcommSocket", deviceI);
                 Log.d(TAG, e.getMessage());}
             mSocket = tmp;
         }
@@ -206,10 +281,10 @@ public class BluetoothFactory {
 
             } catch (IOException connectException) {
                 Log.d(TAG, connectException.getMessage());
-                newStatus(STATUS_IO_CONNECT_THREAD, deviceI);
+                newStatus(mConnectCallback, STATUS_IO_CONNECT_THREAD, deviceI);
             }
             if (good)
-                readSocket(mSocket, deviceI);
+                readSocket(mSocket, mConnectCallback);
             else {
                 try {
                     mSocket.close();
@@ -226,9 +301,11 @@ public class BluetoothFactory {
         private final OutputStream mmOutStream;
         private final BluetoothSocket socket;
         private int deviceI;
+        private BluetoothStatusCallback mConnectedCallback;
 
-        public ConnectedThread(BluetoothSocket socket, int deviceI){
-            this.deviceI = deviceI;
+        public ConnectedThread(BluetoothSocket socket, BluetoothStatusCallback callback){
+            //this.deviceI = deviceI;
+            mConnectedCallback = callback;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
             this.socket = socket;
@@ -237,7 +314,7 @@ public class BluetoothFactory {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                newStatus(STATUS_IO_OPEN_STREAMS, deviceI);
+                newStatus(mConnectedCallback, STATUS_IO_OPEN_STREAMS, deviceI);
                 Log.d(TAG, e.getMessage());
             }
             mmInStream = tmpIn;
@@ -250,8 +327,8 @@ public class BluetoothFactory {
 
         public void run(){
 
-            if (statusCallback != null)
-                statusCallback.onConnected(this);
+            if (mConnectedCallback != null)
+                mConnectedCallback.onConnected(this);
 
             int bytes;
             boolean hasData;
@@ -273,7 +350,7 @@ public class BluetoothFactory {
                     Log.d(TAG, e.getMessage());
 
                     if (!cleaningUp) {
-                        newStatus(STATUS_IO_CONNECTED_THREAD, deviceI);
+                        newStatus(mConnectedCallback, STATUS_IO_CONNECTED_THREAD, deviceI);
                     }
                     break;
                 }
@@ -284,7 +361,7 @@ public class BluetoothFactory {
 
                     Log.d("MGH", data);
 
-                    newData(data, deviceI);
+                    newData(mConnectedCallback, data, deviceI);
                 }
 
             }
@@ -336,10 +413,10 @@ public class BluetoothFactory {
 
     }
 
-    private void readSocket(BluetoothSocket socket, int deviceI){
+    private void readSocket(BluetoothSocket socket, BluetoothStatusCallback callback){
 
 
-        ConnectedThread ct = new ConnectedThread(socket, deviceI);
+        ConnectedThread ct = new ConnectedThread(socket, callback);
         connectionThreads.add(ct);
 
         // if you don't add to the arrayList before you start
@@ -389,24 +466,24 @@ public class BluetoothFactory {
                 acceptThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                newStatus("cleanup catch", -1);
+                newStatus(statusCallback, "cleanup catch", -1);
             }
         }
         Log.d("MGH", "cleanup 4");
     }
 
-    void newStatus(String newString, int deviceI) {
+    void newStatus(BluetoothStatusCallback callback, String newString, int deviceI) {
         Log.d("MGH newStatus", newString);
 
-        if (statusCallback != null) {
-            statusCallback.newStatus(newString, deviceI);
+        if (callback != null) {
+            callback.newStatus(newString, deviceI);
         }
     }
-    void newData(String newString, int deviceI) {
+    void newData(BluetoothStatusCallback callback, String newString, int deviceI) {
         Log.d("MGH newData", newString);
 
-        if (statusCallback != null) {
-            statusCallback.newData(newString, deviceI);
+        if (callback != null) {
+            callback.newData(newString, deviceI);
         }
     }
 
@@ -422,7 +499,8 @@ public class BluetoothFactory {
                     BluetoothAdapter.STATE_ON == intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
                             BluetoothAdapter.ERROR)) {
 
-                newStatus("Bluetooth is now on.", -1);
+                isSetup = true;
+                newStatus(statusCallback, STATUS_BLUETOOTH_TURNED_ON, -1);
                 context.unregisterReceiver(this);
 
             }
@@ -431,5 +509,19 @@ public class BluetoothFactory {
 
     public boolean isEnabled() {
         return mBluetooth != null && mBluetooth.isEnabled();
+    }
+
+    public ArrayList<BluetoothDevice> getPairedDevices() {
+
+        ArrayList<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
+
+        paired = mBluetooth.getBondedDevices();
+        Iterator<BluetoothDevice> iterator = paired.iterator();
+
+        while (iterator.hasNext()) {
+            BluetoothDevice device = iterator.next();
+            devices.add(device);
+        }
+        return devices;
     }
 }

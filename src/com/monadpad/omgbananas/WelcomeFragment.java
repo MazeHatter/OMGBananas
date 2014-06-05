@@ -6,23 +6,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 public class WelcomeFragment extends OMGFragment {
 
     private View mView;
 
-    private Jam mJam;
-
-    public WelcomeFragment(Jam jam) {
-        mJam = jam;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        getActivityMembers();
+
         mView = inflater.inflate(R.layout.welcome,
                 container, false);
 
@@ -36,7 +32,7 @@ public class WelcomeFragment extends OMGFragment {
         mView.findViewById(R.id.return_to_omg_bananas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainFragment mainFragment = new MainFragment(mJam);
+                MainFragment mainFragment = new MainFragment();
                 showFragment(mainFragment);
             }
         });
@@ -46,19 +42,35 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
-                BluetoothFragment f = new BluetoothFragment();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!mJam.isSoundPoolInitialized()) {
+                            mPool.cancelLoading();
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
 
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.slide_in_up,
-                        R.anim.slide_out_up,
-                        R.anim.slide_in_down,
-                        R.anim.slide_out_down
-                );
-                ft.add(R.id.main_layout, f);
-                ft.remove(WelcomeFragment.this);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                ft.addToBackStack(null);
-                ft.commit();
+                        BluetoothRemoteFragment f = new BluetoothRemoteFragment();
+
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        ft.setCustomAnimations(R.anim.slide_in_up,
+                                R.anim.slide_out_up,
+                                R.anim.slide_in_down,
+                                R.anim.slide_out_down
+                        );
+                        ft.add(R.id.main_layout, f);
+                        ft.remove(WelcomeFragment.this);
+                        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        ft.addToBackStack(null);
+                        ft.commit();
+
+                    }
+                }).start();
+
 
             }
         });
@@ -89,7 +101,7 @@ public class WelcomeFragment extends OMGFragment {
         final Runnable callback = new Runnable() {
             @Override
             public void run() {
-                MainFragment mainFragment = new MainFragment(mJam);
+                MainFragment mainFragment = new MainFragment();
                 showFragment(mainFragment);
 
                 getActivity().runOnUiThread(new Runnable() {

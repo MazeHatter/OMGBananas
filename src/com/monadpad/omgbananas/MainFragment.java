@@ -34,8 +34,6 @@ public class MainFragment extends OMGFragment {
     private View samplerControls;
     private Button samplerMuteButton;
 
-    private Jam mJam;
-
     private Button mKeyButton;
     private ChordsView mChordsButton;
 
@@ -50,15 +48,12 @@ public class MainFragment extends OMGFragment {
     private Button bpmButton;
 
 
-
-    public MainFragment(Jam jam) {
-        mJam = jam;
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        getActivityMembers();
+
         mView = inflater.inflate(R.layout.main_fragment,
                 container, false);
 
@@ -107,7 +102,7 @@ public class MainFragment extends OMGFragment {
 
                 DrumFragment f = new DrumFragment();
                 f.setJam(mJam, mJam.getDrumChannel());
-                showFragment(f);
+                showFragmentRight(f);
             }
         });
 
@@ -146,7 +141,7 @@ public class MainFragment extends OMGFragment {
 
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, mJam.getBassChannel());
-                showFragment(f);
+                showFragmentRight(f);
             }
         });
 
@@ -185,10 +180,20 @@ public class MainFragment extends OMGFragment {
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, mJam.getGuitarChannel());
 
-                showFragment(f);
+                showFragmentRight(f);
             }
         });
 
+        guitarControls.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BluetoothConnectFragment f = new BluetoothConnectFragment();
+                f.setChannel(mJam.getGuitarChannel());
+
+                showFragmentDown(f);
+
+            }
+        });
     }
 
     public void setupSamplerPanel() {
@@ -202,7 +207,7 @@ public class MainFragment extends OMGFragment {
 
                 DrumFragment f = new DrumFragment();
                 f.setJam(mJam, mJam.getSamplerChannel());
-                showFragment(f);
+                showFragmentRight(f);
 
             }
         });
@@ -262,7 +267,7 @@ public class MainFragment extends OMGFragment {
 
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, mJam.getSynthChannel());
-                showFragment(f);
+                showFragmentRight(f);
             }
         });
 
@@ -277,7 +282,7 @@ public class MainFragment extends OMGFragment {
 
                 KeyFragment fragment = new KeyFragment();
                 fragment.setJam(mJam, MainFragment.this);
-                showFragment(fragment);
+                showFragmentRight(fragment);
 
 
             }
@@ -289,7 +294,7 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 BeatsFragment fragment = new BeatsFragment();
                 fragment.setJam(mJam, MainFragment.this);
-                showFragment(fragment);
+                showFragmentRight(fragment);
 
             }
         });
@@ -301,7 +306,7 @@ public class MainFragment extends OMGFragment {
 
                 ChordsFragment fragment = new ChordsFragment();
                 fragment.setJam(mJam, MainFragment.this);
-                showFragment(fragment);
+                showFragmentRight(fragment);
 
 
             }
@@ -313,7 +318,7 @@ public class MainFragment extends OMGFragment {
 
     }
 
-    public void showFragment(Fragment f) {
+    public void showFragmentRight(Fragment f) {
 
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -321,6 +326,23 @@ public class MainFragment extends OMGFragment {
                 R.anim.slide_out_left,
                 R.anim.slide_in_left,
                 R.anim.slide_out_right
+        );
+        //ft.remove(MainFragment.this);
+        ft.replace(R.id.main_layout, f);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
+
+    public void showFragmentDown(Fragment f) {
+
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_up,
+                R.anim.slide_out_up,
+                R.anim.slide_in_down,
+                R.anim.slide_out_down
         );
         //ft.remove(MainFragment.this);
         ft.replace(R.id.main_layout, f);

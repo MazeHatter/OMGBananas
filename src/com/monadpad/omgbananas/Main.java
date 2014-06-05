@@ -1,12 +1,8 @@
 package com.monadpad.omgbananas;
 
-import android.bluetooth.BluetoothAdapter;
 import android.media.AudioManager;
-import android.media.SoundPool;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.Dialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -16,11 +12,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 public class Main extends FragmentActivity {
 
     Jam mJam;
+    OMGSoundPool mPool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+    BluetoothFactory mBtf;
 
     boolean mainBananaClicked = false;
 
@@ -28,13 +25,14 @@ public class Main extends FragmentActivity {
 
     private OMGHelper omgHelper;
 
-    private OMGSoundPool pool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+
+    private WelcomeFragment mWelcomeFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        BluetoothAdapter.getDefaultAdapter();
+        mBtf = new BluetoothFactory(this);
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
@@ -45,10 +43,14 @@ public class Main extends FragmentActivity {
         setContentView(R.layout.main);
 
 
-        mJam = new Jam(this, pool);
+        mJam = new Jam(this, mPool);
+
+        if (mWelcomeFragment == null) {
+            mWelcomeFragment = new WelcomeFragment();
+        }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.main_layout, new WelcomeFragment(mJam));
+        ft.add(R.id.main_layout, mWelcomeFragment);
         ft.commit();
 
 

@@ -9,12 +9,16 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/bt_status"
+            android:textColor="#4fa5d5"
+            android:gravity="center"
+            android:textSize="28sp"
+            android:layout_marginTop="10dip"
             android:layout_alignParentTop="true"/>
 
 
         <ImageView
             android:layout_marginTop="10dip"
-            android:src="@drawable/icon48"
+            android:src="@drawable/device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

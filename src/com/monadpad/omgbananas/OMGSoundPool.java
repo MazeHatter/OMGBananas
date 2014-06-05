@@ -18,6 +18,10 @@ public class OMGSoundPool extends SoundPool {
         cancelLoading = true;
     }
 
+    public void allowLoading() {
+        cancelLoading = false;
+    }
+
     public boolean isCanceled() {
         return cancelLoading;
     }
