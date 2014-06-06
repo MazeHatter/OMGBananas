@@ -1,9 +1,7 @@
 package com.monadpad.omgbananas;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,9 +45,9 @@ public class BluetoothConnectFragment extends OMGFragment {
 
         final Activity activity = getActivity();
         //btf = new BluetoothFactory(getActivity());
-        mBtf.connectToPairedDevices(new BluetoothStatusCallback() {
+        mBtf.connectToPairedDevices(new BluetoothCallback() {
             @Override
-            public void newStatus(final String status, int deviceI) {
+            public void newStatus(final String status) {
 
                 if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
                     activity.runOnUiThread(new Runnable() {
@@ -62,12 +60,24 @@ public class BluetoothConnectFragment extends OMGFragment {
             }
 
             @Override
-            public void newData(String data, int deviceI) {
+            public void newData(String name, String value) {
+
+                if (name.equals("CHANNEL_PLAY_NOTE")) {
+                    Note note = new Note();
+                    note.setInstrumentNote(Integer.parseInt(value));
+                    mChannel.playNote(note);
+                }
+
             }
 
             @Override
-            public void onConnected(BluetoothFactory.ConnectedThread connection) {
+            public void onConnected(final BluetoothConnection connection) {
                 // we have a winner
+                connection.writeString("JAM_SET_KEY=" + mJam.getKey() + ";");
+                connection.writeString("JAM_SET_SCALE=" + mJam.getScaleIndex() + ";");
+                connection.writeString("JAM_SET_BPM=" + mJam.getBPM() + ";");
+
+
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -76,14 +86,16 @@ public class BluetoothConnectFragment extends OMGFragment {
                                 R.drawable.device_blue, 0, 0);
                         //button.setText(device.getName());
 
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                connection.writeString("LAUNCH_PANEL");
+                            }
+                        });
+                        devicesUsed++;
                     }
                 });
 
-                // so tell the new device to launch a panel
-                // attached to right channel
-                // and then disappear
-
-                //connection.writeString();
             }
         });
 
