@@ -36,6 +36,7 @@ public class BluetoothConnectFragment extends OMGFragment {
 
     private void setup() {
         final TextView statusView = (TextView)mView.findViewById(R.id.bt_status);
+        final TextView logView = (TextView)mView.findViewById(R.id.bluetooth_log);
 
         buttons = new Button[]{
                 (Button) mView.findViewById(R.id.bt_device_1),
@@ -43,20 +44,30 @@ public class BluetoothConnectFragment extends OMGFragment {
                 (Button) mView.findViewById(R.id.bt_device_3)
         };
 
+        for (BluetoothConnection connection : mBtf.getConnections()) {
+            setupNextButton(connection);
+        }
+
         final Activity activity = getActivity();
-        //btf = new BluetoothFactory(getActivity());
         mBtf.connectToPairedDevices(new BluetoothCallback() {
             @Override
             public void newStatus(final String status) {
 
-                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            statusView.setVisibility(View.GONE);
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                            //statusView.setVisibility(View.GONE);
+                            statusView.setText("Select a Remote:");
+                        } else {
+                            logView.append("\n");
+                            logView.append(status);
+
                         }
-                    });
-                }
+                    }
+                });
+
+
             }
 
             @Override
@@ -64,7 +75,12 @@ public class BluetoothConnectFragment extends OMGFragment {
 
                 if (name.equals("CHANNEL_PLAY_NOTE")) {
                     Note note = new Note();
-                    note.setInstrumentNote(Integer.parseInt(value));
+                    int noteNumber = Integer.parseInt(value);
+                    note.setInstrumentNote(noteNumber);
+                    if (noteNumber == -1) {
+                        note.setRest(true);
+                    }
+
                     mChannel.playNote(note);
                 }
 
@@ -81,24 +97,30 @@ public class BluetoothConnectFragment extends OMGFragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Button button = buttons[devicesUsed];
-                        button.setCompoundDrawablesWithIntrinsicBounds(0,
-                                R.drawable.device_blue, 0, 0);
-                        //button.setText(device.getName());
-
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                connection.writeString("LAUNCH_PANEL");
-                            }
-                        });
-                        devicesUsed++;
+                        setupNextButton(connection);
                     }
                 });
 
             }
         });
 
+
+    }
+
+    private void setupNextButton(final BluetoothConnection connection) {
+        Button button = buttons[devicesUsed];
+        button.setCompoundDrawablesWithIntrinsicBounds(0,
+                R.drawable.device_blue, 0, 0);
+        button.setEnabled(true);
+        button.setText(connection.getDevice().getName());
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connection.writeString("LAUNCH_PANEL");
+            }
+        });
+        devicesUsed++;
 
     }
 }

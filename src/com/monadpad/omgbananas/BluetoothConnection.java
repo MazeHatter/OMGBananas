@@ -1,5 +1,6 @@
 package com.monadpad.omgbananas;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class BluetoothConnection extends Thread {
+    private BluetoothDevice mDevice;
     private BluetoothFactory bluetoothFactory;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
@@ -16,12 +18,14 @@ public class BluetoothConnection extends Thread {
 
     private final static String TAG = "MGH bluetooth connection";
     
-    public BluetoothConnection(BluetoothFactory bluetoothFactory, BluetoothSocket socket, BluetoothCallback callback){
+    public BluetoothConnection(BluetoothDevice device, BluetoothFactory bluetoothFactory,
+                               BluetoothSocket socket, BluetoothCallback callback){
         this.bluetoothFactory = bluetoothFactory;
         mConnectedCallback = callback;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
         this.socket = socket;
+        mDevice = device;
 
         try {
             tmpIn = socket.getInputStream();
@@ -118,4 +122,7 @@ public class BluetoothConnection extends Thread {
 
     }
 
+    public BluetoothDevice getDevice() {
+        return mDevice;
+    }
 }

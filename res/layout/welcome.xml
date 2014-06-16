@@ -14,12 +14,25 @@
 
 
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/loading_progress"
-        android:layout_alignParentTop="true"/>
+        android:orientation="vertical"
+        android:id="@+id/loading_info"
+        android:layout_alignParentTop="true"
+        >
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/loading_progress"
+            />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Loading Sounds..."/>
+    </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
@@ -33,7 +46,7 @@
         <Button android:text="Return to OMG Bananas"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:drawableRight="@android:drawable/ic_media_next"
+            android:drawableRight="@android:drawable/ic_media_ff"
             android:id="@+id/return_to_omg_bananas"></Button>
 
         <TextView android:text="Press Back again to Exit"

@@ -1,9 +1,9 @@
 package com.monadpad.omgbananas;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -352,6 +352,23 @@ public class MainFragment extends OMGFragment {
 
     }
 
+    public void showFragmentUp(Fragment f) {
+
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_down,
+                R.anim.slide_out_down,
+                R.anim.slide_in_up,
+                R.anim.slide_out_up
+        );
+        //ft.remove(MainFragment.this);
+        ft.replace(R.id.main_layout, f);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
+
     private void setupMainControls() {
 
         playButton = (Button)mView.findViewById(R.id.play_button);
@@ -395,6 +412,16 @@ public class MainFragment extends OMGFragment {
 
     private void setupMainBanana() {
 
+        final Button pointsButton = (Button) mView.findViewById(R.id.points_button);
+        String pointsText = Integer.toString(PreferenceHelper.getPointCount(getActivity()));
+        pointsButton.setText(pointsText);
+        pointsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragmentUp(new SavedListFragment());
+            }
+        });
+
         final ImageView mainBanana = (ImageView) mView.findViewById(R.id.main_banana);
         mainBanana.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -406,6 +433,9 @@ public class MainFragment extends OMGFragment {
 
                 Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                 view.startAnimation(turnin);
+
+                String pointsText = Integer.toString(PreferenceHelper.dingPointCount(getActivity()));
+                pointsButton.setText(pointsText);
 
                 /*
 

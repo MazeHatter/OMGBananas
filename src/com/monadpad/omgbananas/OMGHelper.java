@@ -1,6 +1,5 @@
 package com.monadpad.omgbananas;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,12 +34,13 @@ public class OMGHelper {
     public void submitWithTags(String tags) {
 
         ContentValues data = new ContentValues();
-        data.put("TAGS", tags);
-        data.put("TYPE", mType.toString());
-        data.put("DATA", mData);
+        data.put("tags", tags);
+        data.put("data", mData);
+        data.put("time", System.currentTimeMillis()/1000);
+
 
         SQLiteDatabase db = new SavedDataOpenHelper(mContext).getWritableDatabase();
-        db.insert("bananas", null, data);
+        db.insert("saves", null, data);
         db.close();
 
         new SaveToOMG().execute(mHomeUrl + mSubmitUrl, mType.toString(), tags, mData);

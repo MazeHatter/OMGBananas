@@ -35,8 +35,13 @@ public class BluetoothRemoteFragment extends OMGFragment {
 
         mBtf.startAccepting(new BluetoothCallback() {
             @Override
-            public void newStatus(String status) {
-                statusView.setText(status);
+            public void newStatus(final String status) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        statusView.setText(status);
+                    }
+                });
             }
 
             @Override

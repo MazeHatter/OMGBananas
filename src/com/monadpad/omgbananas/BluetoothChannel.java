@@ -26,6 +26,7 @@ public class BluetoothChannel extends Channel {
 
     @Override
     public void playNote(Note note) {
-        mConnection.writeString("CHANNEL_PLAY_NOTE=" + note.getInstrumentNote() + ";");
+        int noteNumber = note.isRest() ? -1 : note.getInstrumentNote();
+        mConnection.writeString("CHANNEL_PLAY_NOTE=" + noteNumber + ";");
     }
 }

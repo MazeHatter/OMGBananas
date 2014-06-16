@@ -126,6 +126,7 @@ public class WelcomeFragment extends OMGFragment {
 
     private void hideWelcome() {
         mView.findViewById(R.id.welcome_info).setVisibility(View.GONE);
+        mView.findViewById(R.id.loading_info).setVisibility(View.GONE);
         mView.findViewById(R.id.goback).setVisibility(View.VISIBLE);
 
     }

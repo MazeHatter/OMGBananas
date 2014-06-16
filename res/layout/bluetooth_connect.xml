@@ -22,7 +22,7 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="110dip">
+            android:layout_height="200dip">
 
             <Button
                 android:layout_weight="1.0"
@@ -31,6 +31,7 @@
                 android:drawableTop="@drawable/device"
                 android:text="(Not connected)"
                 android:id="@+id/bt_device_1"
+                android:enabled="false"
                 />
             <Button
                 android:layout_weight="1.0"
@@ -39,6 +40,7 @@
                 android:drawableTop="@drawable/device"
                 android:text="(Not connected)"
                 android:id="@+id/bt_device_2"
+                android:enabled="false"
                 />
             <Button
                 android:layout_weight="1.0"
@@ -47,14 +49,8 @@
                 android:drawableTop="@drawable/device"
                 android:text="(Not connected)"
                 android:id="@+id/bt_device_3"
+                android:enabled="false"
                 />
-            <Button
-                android:layout_weight="1.0"
-                android:layout_width="0dip"
-                android:layout_height="fill_parent"
-                android:drawableTop="@drawable/device"
-                android:text="(Not connected)"
-                android:visibility="gone"/>
             <Button
                 android:layout_weight="1.0"
                 android:layout_width="0dip"
@@ -62,6 +58,16 @@
                 android:drawableTop="@drawable/device"
                 android:text="(Not connected)"
                 android:visibility="gone"
+                android:enabled="false"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/device"
+                android:text="(Not connected)"
+                android:visibility="gone"
+                android:enabled="false"
                 />
 
         </LinearLayout>
@@ -69,27 +75,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Paired Devices:"
+            android:text="Initializing..."
+            android:id="@+id/bluetooth_log"
+
             />
+
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:id="@+id/paired_devices"
-            />
-
-        <ListView
+            android:gravity="center"
+            android:textSize="22sp"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-        </ListView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pair this device with another device. \n
-Place the other device in Remote Mode"
+            android:layout_height="fill_parent"
+            android:text="Pair this device with another device running OMG Bananas. \nPlace the other device in Remote Mode."
             />
 
 </LinearLayout>

@@ -47,6 +47,8 @@ public class BluetoothFactory {
 
     private boolean isSetup = false;
 
+    private ArrayList<BluetoothConnection> mConnections = new ArrayList<BluetoothConnection>();
+
     public BluetoothFactory(Activity context) {
         ctx = context;
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -145,11 +147,9 @@ public class BluetoothFactory {
 
 
     private class AcceptThread extends Thread{
-
         private BluetoothCallback mCallback;
         public AcceptThread(BluetoothCallback callback){
             mCallback = callback;
-
             if (mServerSocket == null ) {
                 BluetoothServerSocket tmp = null;
                 try {
@@ -176,7 +176,8 @@ public class BluetoothFactory {
                 }
 
                 if (socket != null){
-                    readSocket(socket, mCallback);
+                    newStatus(mCallback, "Connecting...");
+                    readSocket(socket.getRemoteDevice(), socket, mCallback);
                 }
 
             }
@@ -205,27 +206,37 @@ public class BluetoothFactory {
         }
 
 
-        int devices = 0;
-
+        boolean isConnected;
         paired = mBluetooth.getBondedDevices();
         Iterator<BluetoothDevice> iterator = paired.iterator();
         while (iterator.hasNext()) {
             BluetoothDevice device = iterator.next();
-            newStatus(callback, STATUS_CONNECTING_TO + device.getName());
+            isConnected = false;
+            for (BluetoothConnection connection : connectionThreads) {
+                if (connection.getDevice().getAddress().equals(device.getAddress())) {
+                    isConnected = true;
+                    break;
+                }
+            }
+            if (!isConnected) {
+                newStatus(callback, STATUS_CONNECTING_TO + device.getName());
 
-            new ConnectThread(device, callback).start();
-            devices++;
+                new ConnectThread(device, callback).start();
+
+            }
         }
     }
 
 
     private class ConnectThread extends Thread {
+        BluetoothDevice mDevice;
         BluetoothSocket mSocket;
         BluetoothCallback mConnectCallback;
 
         public ConnectThread(BluetoothDevice device, BluetoothCallback callback) {
             mConnectCallback = callback;
             BluetoothSocket tmp = null;
+            mDevice = device;
 
             try {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
@@ -248,7 +259,7 @@ public class BluetoothFactory {
                 newStatus(mConnectCallback, STATUS_IO_CONNECT_THREAD);
             }
             if (good)
-                readSocket(mSocket, mConnectCallback);
+                readSocket(mDevice, mSocket, mConnectCallback);
             else {
                 try {
                     mSocket.close();
@@ -260,10 +271,10 @@ public class BluetoothFactory {
         }
     }
 
-    private void readSocket(BluetoothSocket socket, BluetoothCallback callback){
+    private void readSocket(BluetoothDevice device, BluetoothSocket socket, BluetoothCallback callback){
 
 
-        BluetoothConnection ct = new BluetoothConnection(this, socket, callback);
+        BluetoothConnection ct = new BluetoothConnection(device, this, socket, callback);
         connectionThreads.add(ct);
 
         // if you don't add to the arrayList before you start
@@ -381,5 +392,9 @@ public class BluetoothFactory {
 
         abstract void newStatus(String data);
 
+    }
+
+    public ArrayList<BluetoothConnection> getConnections() {
+        return connectionThreads;
     }
 }
