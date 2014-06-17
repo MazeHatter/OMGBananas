@@ -114,4 +114,14 @@ public class Note {
     public void isPlaying(boolean value) {
         isplaying = value;
     }
+
+    public void setNakedNote(int nakedNote) {
+        if (naked == null) {
+            naked = new Note();
+            naked.setRest(isRest());
+            naked.setBeats(getBeats());
+        }
+
+        naked.setNote(nakedNote);
+    }
 }

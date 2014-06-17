@@ -145,7 +145,19 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        bassControls.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BluetoothConnectFragment f = new BluetoothConnectFragment();
+                f.setChannel(mJam.getBassChannel());
+
+                showFragmentDown(f);
+
+            }
+        });
     }
+
+
 
     public void setupGuitarPanel() {
 
@@ -271,7 +283,19 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        keyboardControls.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BluetoothConnectFragment f = new BluetoothConnectFragment();
+                f.setChannel(mJam.getSynthChannel());
+
+                showFragmentDown(f);
+
+            }
+        });
     }
+
+
 
     public void setupSectionInfoPanel() {
 
@@ -418,7 +442,25 @@ public class MainFragment extends OMGFragment {
         pointsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFragmentUp(new SavedListFragment());
+                showFragmentUp(new SavedListFragment(MainFragment.this, mJam));
+            }
+        });
+
+        final View savedPanel = mView.findViewById(R.id.saved_panel);
+
+        final Button doneButton = (Button)savedPanel.findViewById(R.id.saved_done);
+        final Button tagsButton = (Button)savedPanel.findViewById(R.id.saved_add_tags);
+        final Button shareButton = (Button)savedPanel.findViewById(R.id.saved_share);
+
+        final Animation slideUp = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_up);
+
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doneButton.setVisibility(View.GONE);
+                tagsButton.setVisibility(View.GONE);
+                shareButton.setVisibility(View.GONE);
+
             }
         });
 
@@ -437,9 +479,14 @@ public class MainFragment extends OMGFragment {
                 String pointsText = Integer.toString(PreferenceHelper.dingPointCount(getActivity()));
                 pointsButton.setText(pointsText);
 
-                /*
+                doneButton.setVisibility(View.VISIBLE);
+                tagsButton.setVisibility(View.VISIBLE);
+                shareButton.setVisibility(View.VISIBLE);
 
-                if (mainBananaClicked) {
+
+                //savedPanel.startAnimation(fadeIn);
+
+/*                if (mainBananaClicked) {
                     mainBananaClicked = false;
 
                     mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.banana48));

@@ -28,6 +28,15 @@ public class SavedListFragment extends ListFragment
 
     private View mView;
 
+    private Jam mJam;
+
+    private MainFragment mMainFragment;
+
+    public SavedListFragment(MainFragment mainFragment, Jam jam) {
+        mJam = jam;
+        mMainFragment = mainFragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,27 +72,20 @@ public class SavedListFragment extends ListFragment
 
     public void onListItemClick(ListView l, View v, int position, long id){
 
-/*        if (v == head) {
-            startActivity(new Intent(this, SdListActivity.class));
+        if (v == head) {
             return;
         }
-
-        if (v == foot){
-            if (((TextView)v).getText().equals(getString(R.string.get_more)) && !noMoreToDownload){
-                page++;
-                new DownloadGallery().execute();
-            }
-            return;
-        }
-*/
 
 
         cursor.moveToPosition(position - headerOffset);
-        //todo Intent intent = new Intent(this, Main.class);
         String json = cursor.getString(cursor.getColumnIndex("data"));
-        //intent.putExtra("beatData", json);
 
-        //startActivity(intent);
+        new JamLoader(mJam).loadData(json);
+
+        if (!mJam.isPlaying())
+            mJam.kickIt();
+
+        mMainFragment.updateUI();
 
     }
 

@@ -58,7 +58,7 @@ public class MelodyMaker {
     }
 
     public String getKeyName() {
-        return keyCaptions[keyI] + " " + scaleCaptions[scaleI];
+        return keyCaptions[key] + " " + scaleCaptions[scaleI];
     }
 
     public void pickRandomKey() {
@@ -473,9 +473,19 @@ public class MelodyMaker {
         ascale = buildScale(scales[scaleI]);
     }
 
+    public void setScale(String scale) {
+
+        for (int i = 0; i < scales.length; i ++) {
+            if (scale.equals(scales[i])) {
+                scaleI = i;
+                ascale = buildScale(scales[i]);
+                return;
+            }
+        }
+    }
+
     public void setKey(int keyIndex) {
-        keyI = keyIndex;
-        key = Integer.parseInt(keys[keyI]);
+        key = keyIndex;
     }
 
     public ArrayList<Note> getCurrentMelody() {

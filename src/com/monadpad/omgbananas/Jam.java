@@ -1,10 +1,8 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -475,7 +473,7 @@ public class Jam {
         sb.append(", \"subbeatMillis\" :");
         sb.append(subbeatLength);
 
-        sb.append(", \"data\" : [");
+        sb.append(", \"parts\" : [");
 
         drumChannel.getData(sb);
 
@@ -591,6 +589,8 @@ public class Jam {
             sb.append(", \"beats\": ");
             sb.append(note.getBeats());
             if (!note.isRest()) {
+                sb.append(", \"instrumentNote\" :");
+                sb.append(note.getInstrumentNote());
                 sb.append(", \"scaledNote\" :");
                 sb.append(note.getNote());
                 sb.append(", \"note\" :");
@@ -720,6 +720,9 @@ public class Jam {
         return drumChannel;
     }
 
+    public void setScale(String scale) {
+        mm.setScale(scale);
+    }
     public void setScale(int scaleI) {
         mm.setScale(scaleI);
     }
@@ -749,6 +752,10 @@ public class Jam {
     public void setBPM(float bpm) {
         subbeatLength = (int)((60000 / bpm) / subbeats);
         //bpm = 60000 / (subbeatLength * subbeats);
+    }
+
+    public void setSubbeatLength(int length) {
+        subbeatLength = length;
     }
 
     public void setChordProgression(int[] chordProgression) {

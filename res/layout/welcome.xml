@@ -84,7 +84,7 @@
             android:gravity="center"
             />
         <ImageView
-            android:layout_marginTop="10dip"
+            android:layout_marginTop="40dip"
             android:src="@drawable/icon48"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

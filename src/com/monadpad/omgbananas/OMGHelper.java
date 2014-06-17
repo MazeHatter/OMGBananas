@@ -4,11 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-/**
- * User: m
- * Date: 11/20/13
- * Time: 11:51 PM
- */
 public class OMGHelper {
 
     private static String mSubmitUrl = "omg";

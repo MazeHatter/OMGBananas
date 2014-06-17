@@ -2,6 +2,7 @@ package com.monadpad.omgbananas;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -11,6 +12,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,6 +53,9 @@ public class SaveToOMG {
                 response.getEntity().writeTo(out);
                 out.close();
                 responseString = out.toString();
+
+                getIdFromResponse(responseString);
+
                 Log.d("MGH doHttp", responseString);
                 if (!responseString.equals("bad")){
                     saved = true;
@@ -89,4 +95,22 @@ public class SaveToOMG {
         }
     }
 
+    private int getIdFromResponse(String responseString) {
+        int ret = -1;
+        try {
+            JSONObject response = new JSONObject(responseString);
+
+
+            if (response.has("result") && response.getString("result").equals("good")) {
+                if (response.has("id")) {
+                    ret = response.getInt("id");
+                }
+            }
+        }
+        catch (JSONException ex) {
+
+        }
+
+        return ret;
+    }
 }

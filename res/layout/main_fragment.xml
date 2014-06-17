@@ -124,4 +124,39 @@
 
     </LinearLayout>
 
+
+0    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:id="@+id/saved_panel"
+        android:animateLayoutChanges="true"
+        android:background="#000000"
+        >
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/saved_add_tags"
+            android:text="Add Tags"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/saved_share"
+            android:text="Share"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/saved_done"
+            android:text="Done"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 </RelativeLayout>
