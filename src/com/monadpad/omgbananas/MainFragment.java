@@ -47,6 +47,7 @@ public class MainFragment extends OMGFragment {
 
     private Button bpmButton;
 
+    private OMGHelper mOMGHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -452,11 +453,28 @@ public class MainFragment extends OMGFragment {
         final Button tagsButton = (Button)savedPanel.findViewById(R.id.saved_add_tags);
         final Button shareButton = (Button)savedPanel.findViewById(R.id.saved_share);
 
-        final Animation slideUp = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_up);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doneButton.setVisibility(View.GONE);
+                tagsButton.setVisibility(View.GONE);
+                shareButton.setVisibility(View.GONE);
+
+                mOMGHelper.shareLastSaved();
+            }
+        });
+
+        tagsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragmentUp(new AddTagsFragment(mOMGHelper));
+            }
+        });
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 doneButton.setVisibility(View.GONE);
                 tagsButton.setVisibility(View.GONE);
                 shareButton.setVisibility(View.GONE);
@@ -469,9 +487,9 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
-                OMGHelper omgHelper = new OMGHelper(getActivity(), OMGHelper.Type.SECTION,
+                mOMGHelper = new OMGHelper(getActivity(), OMGHelper.Type.SECTION,
                         mJam.getData());
-                omgHelper.submitWithTags("");
+                mOMGHelper.submit();
 
                 Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                 view.startAnimation(turnin);
@@ -484,52 +502,6 @@ public class MainFragment extends OMGFragment {
                 shareButton.setVisibility(View.VISIBLE);
 
 
-                //savedPanel.startAnimation(fadeIn);
-
-/*                if (mainBananaClicked) {
-                    mainBananaClicked = false;
-
-                    mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.banana48));
-
-                    showDialog(11);
-
-                }
-                else {
-                    mainBanana.setImageDrawable(getResources().getDrawable(R.drawable.add_tag_white));
-                    mainBananaClicked = true;
-
-                    mainBanana.clearAnimation();
-
-                    omgHelper = new OMGHelper(Main.this, OMGHelper.Type.SECTION,
-                            mJam.getData());
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                            }
-                            if (mainBananaClicked) {
-
-                                mainBananaClicked = false;
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showBanana(mainBanana);
-                                    }
-                                });
-
-                                omgHelper.submitWithTags("");
-
-                            }
-
-                        }
-                    }).start();
-                }
-        */
             }
         });
 
@@ -554,6 +526,20 @@ public class MainFragment extends OMGFragment {
             updateKeyUI();
             updateBPMUI();
             mChordsButton.invalidate();
+
+            bassMuteButton.setBackgroundColor(mJam.getBassChannel().enabled ?
+                    Color.GREEN : Color.RED);
+            guitarMuteButton.setBackgroundColor(mJam.getGuitarChannel().enabled ?
+                    Color.GREEN : Color.RED);
+            synthMuteButton.setBackgroundColor(mJam.getSynthChannel().enabled ?
+                    Color.GREEN : Color.RED);
+            drumMuteButton.setBackgroundColor(mJam.getDrumChannel().enabled ?
+                    Color.GREEN : Color.RED);
+            samplerMuteButton.setBackgroundColor(mJam.getSamplerChannel().enabled ?
+                    Color.GREEN : Color.RED);
+
+            playButton.setText(mJam.isPlaying() ? "Stop" : "Play");
+
         }
 
     }

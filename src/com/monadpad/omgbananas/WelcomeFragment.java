@@ -1,21 +1,28 @@
 package com.monadpad.omgbananas;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 
 public class WelcomeFragment extends OMGFragment {
 
     private View mView;
 
+    private Handler mHandler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        mHandler = new Handler();
 
         getActivityMembers();
 
@@ -23,7 +30,125 @@ public class WelcomeFragment extends OMGFragment {
                 container, false);
 
         if (!mJam.isSoundPoolInitialized()) {
+
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
+                    anim.setDuration(1200);
+                    View view = mView.findViewById(R.id.omg_presents_1);
+                    view.setVisibility(View.VISIBLE);
+                    view.startAnimation(anim);
+                }
+            }, 800);
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
+                    anim.setDuration(1200);
+                    View view = mView.findViewById(R.id.omg_presents_2);
+                    view.setVisibility(View.VISIBLE);
+                    view.startAnimation(anim);
+
+                }
+            }, 2300);
+
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
+                    anim.setDuration(2700);
+
+                    View view = mView.findViewById(R.id.omg_bananas);
+                    view.setVisibility(View.VISIBLE);
+                    view.startAnimation(anim);
+
+                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                    view.startAnimation(turnin);
+
+                }
+            }, 5200);
+
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
+                    anim.setDuration(2000);
+                    anim.setFillAfter(true);
+
+                    mView.findViewById(R.id.txt_press_banana).startAnimation(anim);
+                    View view = mView.findViewById(R.id.img_press_banana);
+                    view.startAnimation(anim);
+
+                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                    view.startAnimation(turnin);
+                    view.setVisibility(View.VISIBLE);
+
+                    final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
+                    anim2.setFillAfter(true);
+                    anim2.setDuration(2700);
+
+                    View view2 = mView.findViewById(R.id.omg_bananas);
+                    view2.startAnimation(anim2);
+
+                    mView.findViewById(R.id.omg_presents_1).startAnimation(anim2);
+                    mView.findViewById(R.id.omg_presents_2).startAnimation(anim2);
+
+                }
+            }, 8500);
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
+                    anim.setDuration(2000);
+                    anim.setFillAfter(true);
+                    mView.findViewById(R.id.txt_press_monkey).startAnimation(anim);
+                    View view = mView.findViewById(R.id.img_press_monkey);
+                    view.startAnimation(anim);
+
+                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                    view.startAnimation(turnin);
+                    view.setVisibility(View.VISIBLE);
+
+                }
+            }, 12000);
+
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
+                    anim2.setFillAfter(true);
+                    anim2.setDuration(2700);
+
+                    mView.findViewById(R.id.txt_press_banana).startAnimation(anim2);
+                    mView.findViewById(R.id.img_press_banana).startAnimation(anim2);
+
+                }
+            }, 13000);
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
+                    anim2.setFillAfter(true);
+                    anim2.setDuration(2700);
+
+                    mView.findViewById(R.id.txt_press_monkey).startAnimation(anim2);
+                    mView.findViewById(R.id.img_press_monkey).startAnimation(anim2);
+
+                }
+            }, 15800);
+
             setupSoundPool();
+
         }
         else {
             hideWelcome();

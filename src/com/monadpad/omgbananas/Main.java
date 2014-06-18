@@ -1,29 +1,17 @@
 package com.monadpad.omgbananas;
 
 import android.media.AudioManager;
-import android.support.v4.app.FragmentActivity;
-import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 public class Main extends FragmentActivity {
 
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
     BluetoothFactory mBtf;
-
-    boolean mainBananaClicked = false;
-
-    private final static int DIALOG_TAGS = 11;
-
-    private OMGHelper omgHelper;
 
 
     private WelcomeFragment mWelcomeFragment;
@@ -67,50 +55,5 @@ public class Main extends FragmentActivity {
         mJam.finish();
     }
 
-
-    protected Dialog onCreateDialog(int dialog){
-
-        switch (dialog){
-
-            case DIALOG_TAGS:
-
-                final Dialog dl = new Dialog(this);
-                dl.setTitle(getString(R.string.tags_dialog_title));
-                dl.setContentView(R.layout.gettags);
-
-
-                dl.findViewById(R.id.why_button).setOnClickListener( new View.OnClickListener() {
-                    public void onClick(View v) {
-                        removeDialog(DIALOG_TAGS);
-                    }
-                });
-
-                dl.findViewById(R.id.ok_button).setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-
-                        String tags = ((EditText) dl.findViewById(R.id.txt_tags)).getText().toString();
-
-                        removeDialog(DIALOG_TAGS);
-
-                        omgHelper.submitWithTags(tags);
-                    }
-                });
-                return dl;
-        }
-        return null;
-    }
-
-
-
-
-
-
-    private void showBanana(ImageView view) {
-        view.setImageDrawable(getResources().getDrawable(R.drawable.banana48));
-
-        Animation turnin = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        view.startAnimation(turnin);
-
-    }
 
 }

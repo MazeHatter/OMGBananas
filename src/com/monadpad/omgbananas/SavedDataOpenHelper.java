@@ -10,13 +10,13 @@ import android.util.Log;
 public class SavedDataOpenHelper extends SQLiteOpenHelper {
 
     SavedDataOpenHelper(Context context) {
-        super(context, "OMG_BANANAS", null, 4);
+        super(context, "OMG_BANANAS", null, 5);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE saves (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "tags TEXT, data TEXT, time INTEGER)");
+                "tags TEXT, data TEXT, time INTEGER, omg_id INTEGER)");
     }
 
     @Override
@@ -51,6 +51,9 @@ public class SavedDataOpenHelper extends SQLiteOpenHelper {
 
         }
 
+        if (oldVersion == 4) {
+            db.execSQL("ALTER TABLE saves ADD COLUMN omg_id INTEGER");
+        }
     }
 
     public Cursor getSavedCursor() {

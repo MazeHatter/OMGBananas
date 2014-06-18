@@ -373,11 +373,38 @@ public class Jam {
         setDrumset(rand.nextInt(2));
 
         monkeyWithBass();
+        if (rand.nextInt(20) == 0) {
+            basslineChannel.disable();
+        }
+        else {
+            basslineChannel.enable();
+        }
+
         monkeyWithDrums();
+        if (rand.nextInt(20) == 0) {
+            drumChannel.disable();
+        }
+        else {
+            drumChannel.enable();
+        }
+
         monkeyWithGuitar();
+        if (rand.nextInt(3) == 0) {
+            guitarChannel.enable();
+        }
+        else {
+            guitarChannel.disable();
+        }
+
         monkeyWithSynth();
 
         samplerChannel.makeFill();
+        if (rand.nextInt(3) == 0) {
+            samplerChannel.disable();
+        }
+        else {
+            samplerChannel.enable();
+        }
 
         makeChannelNotes(guitarChannel, 12);
         makeChannelNotes(keyboardChannel, 12);

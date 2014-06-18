@@ -34,8 +34,8 @@ public class SaveToOMG {
     public SaveToOMG() {
     }
 
-    private boolean doHttp(String saveUrl, String type, String tags, String data) {
-        boolean saved = false;
+    private long doHttp(String saveUrl, String type, String data) {
+        long id = -1;
         HttpClient httpclientup = new DefaultHttpClient();
         Log.d("MGH doHttp", "1");
         try {
@@ -43,7 +43,7 @@ public class SaveToOMG {
             List<NameValuePair> postParams = new ArrayList<NameValuePair>();
             postParams.add(new BasicNameValuePair("data", data));
             postParams.add(new BasicNameValuePair("type", type));
-            postParams.add(new BasicNameValuePair("tags", tags));
+            postParams.add(new BasicNameValuePair("tags", ""));
             hPost.setEntity(new UrlEncodedFormEntity(postParams));
 
             HttpResponse response = httpclientup.execute(hPost);
@@ -54,14 +54,10 @@ public class SaveToOMG {
                 out.close();
                 responseString = out.toString();
 
-                getIdFromResponse(responseString);
+                id = getIdFromResponse(responseString);
 
                 Log.d("MGH doHttp", responseString);
-                if (!responseString.equals("bad")){
-                    saved = true;
-                }   else{
-                    desc = responseString;
-                }
+                desc = responseString;
             //}
 
         } catch (ClientProtocolException ee) {
@@ -70,20 +66,29 @@ public class SaveToOMG {
         } catch (IOException ee) {
             desc = ee.getMessage();
         }
+
         Log.d("MGH doHttp saved?", desc);
-        return saved;
+        return id;
 
     }
 
-    public void execute(String saveUrl, String type, String tags, String data) {
-        new SendJam().execute(saveUrl, type, tags, data);
+    public void execute(String saveUrl, String type, String data, OMGCallback callback) {
+        new SendJam(callback).execute(saveUrl, type, data);
     }
 
     private class SendJam extends AsyncTask<String, Void, String> {
 
+        private OMGCallback mCallback;
+
+        private long id = -1;
+
+        private SendJam(OMGCallback callback) {
+            mCallback = callback;
+        }
+
         protected String doInBackground(String... args) {
 
-            doHttp(args[0], args[1], args[2], args[3]);
+            id = doHttp(args[0], args[1], args[2]);
             return null;
         }
 
@@ -92,18 +97,20 @@ public class SaveToOMG {
 
         protected void onPostExecute(String result) {
 
+            mCallback.onSuccess(id);
+
         }
     }
 
-    private int getIdFromResponse(String responseString) {
-        int ret = -1;
+    private long getIdFromResponse(String responseString) {
+        long ret = -1;
         try {
             JSONObject response = new JSONObject(responseString);
 
 
             if (response.has("result") && response.getString("result").equals("good")) {
                 if (response.has("id")) {
-                    ret = response.getInt("id");
+                    ret = response.getLong("id");
                 }
             }
         }
