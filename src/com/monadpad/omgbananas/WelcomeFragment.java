@@ -229,13 +229,6 @@ public class WelcomeFragment extends OMGFragment {
                 MainFragment mainFragment = new MainFragment();
                 showFragment(mainFragment);
 
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideWelcome();
-                    }
-                });
-
             }
         };
 

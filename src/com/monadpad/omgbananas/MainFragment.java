@@ -107,6 +107,16 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        drumControls.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BluetoothConnectFragment f = new BluetoothConnectFragment();
+                f.setChannel(mJam.getDrumChannel());
+
+                showFragmentDown(f);
+
+            }
+        });
 
     }
 
@@ -243,6 +253,17 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 view.setBackgroundColor(mJam.toggleMuteSampler() ?
                         Color.GREEN : Color.RED);
+            }
+        });
+
+        samplerControls.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BluetoothConnectFragment f = new BluetoothConnectFragment();
+                f.setChannel(mJam.getSamplerChannel());
+
+                showFragmentDown(f);
+
             }
         });
 

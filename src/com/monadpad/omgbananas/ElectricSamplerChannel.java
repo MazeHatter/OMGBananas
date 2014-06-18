@@ -1,7 +1,6 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
 
 /**
  * User: m
@@ -17,7 +16,7 @@ public class ElectricSamplerChannel extends Channel {
         highNote = 85;
         lowNote = 40;
 
-        volume = 0.15f;
+        volume = 0.10f;
         rids = new int[46];
 
         int i= 0;

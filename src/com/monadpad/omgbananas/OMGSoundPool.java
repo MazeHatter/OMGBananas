@@ -25,4 +25,12 @@ public class OMGSoundPool extends SoundPool {
     public boolean isCanceled() {
         return cancelLoading;
     }
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public void setLoaded(boolean value) {
+        isLoaded = value;
+    }
 }

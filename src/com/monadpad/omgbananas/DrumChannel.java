@@ -1,7 +1,6 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -246,6 +245,10 @@ public abstract class DrumChannel extends Channel {
 
     public boolean[] getTrack(int track)  {
         return pattern[track];
+    }
+
+    public void setPattern(int track, int subbeat, boolean value) {
+        pattern[track][subbeat] = value;
     }
 
     public void makeDrumBeats() {

@@ -29,4 +29,9 @@ public class BluetoothChannel extends Channel {
         int noteNumber = note.isRest() ? -1 : note.getInstrumentNote();
         mConnection.writeString("CHANNEL_PLAY_NOTE=" + noteNumber + ";");
     }
+
+    public void setLowHigh(int low, int high) {
+        lowNote = low;
+        highNote = high;
+    }
 }

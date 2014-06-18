@@ -98,7 +98,9 @@ public class Jam {
 
                     if (loadedSounds == soundsToLoad) {
 
-                        if (callback != null)
+                        pool.setLoaded(true);
+
+                        if (callback != null && !pool.isCanceled())
                             callback.run();
 
                     }
@@ -129,7 +131,8 @@ public class Jam {
         if (updatePB) progressBar.incrementProgressBy(1);
 
         if (!usingListener) {
-            callback.run();
+            if (!pool.isCanceled())
+                callback.run();
         }
 
         soundPoolInitialized = true;

@@ -206,8 +206,9 @@ public class DrumView extends View {
         int beatColumns = wide - 1;
         int i = x % beatColumns + y * beatColumns;
 
-        if (i >= 0 && data.length > i)
-            data[i] = !data[i];
+        if (i >= 0 && data.length > i) {
+            mChannel.setPattern(firstRowButton, i, !data[i]);
+        }
 
     }
 

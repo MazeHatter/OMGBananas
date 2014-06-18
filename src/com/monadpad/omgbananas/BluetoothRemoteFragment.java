@@ -2,6 +2,7 @@ package com.monadpad.omgbananas;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,11 +71,24 @@ public class BluetoothRemoteFragment extends OMGFragment {
         return mView;
     }
 
-    private void launchPanel() {
+    private void launchFretboard(int low, int high) {
         GuitarFragment f = new GuitarFragment();
+        BluetoothChannel channel = new BluetoothChannel(getActivity(), mPool, mConnection);
+        channel.setLowHigh(low, high);
+        f.setJam(mJam, channel);
 
-        f.setJam(mJam, new BluetoothChannel(getActivity(), mPool, mConnection));
+        showFragment(f);
+    }
 
+    private void launchDrumpad() {
+        DrumFragment f = new DrumFragment();
+        BluetoothDrumChannel channel = new BluetoothDrumChannel(getActivity(), mPool, mJam, mConnection);
+        f.setJam(mJam, channel);
+
+        showFragment(f);
+    }
+
+    private void showFragment(Fragment f) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_up,
                 R.anim.slide_out_up,
@@ -89,8 +103,14 @@ public class BluetoothRemoteFragment extends OMGFragment {
 
     private void processCommand(String name, String value) {
 
-        if ("LAUNCH_PANEL".equals(name)) {
-            launchPanel();
+        if ("LAUNCH_FRETBOARD".equals(name)) {
+            String[] lowhigh = value.split(",");
+            launchFretboard(Integer.parseInt(lowhigh[0]), Integer.parseInt(lowhigh[1]));
+
+        }
+        else if ("LAUNCH_DRUMPAD".equals(name)) {
+            launchDrumpad();
+
         }
         else if (name.equals("JAM_SET_KEY")) {
             mJam.setKey(Integer.parseInt(value));

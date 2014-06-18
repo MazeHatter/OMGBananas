@@ -2,6 +2,7 @@ package com.monadpad.omgbananas;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,16 @@ public class BluetoothConnectFragment extends OMGFragment {
                     mChannel.playNote(note);
                 }
 
+                if (name.equals("CHANNEL_SET_PATTERN")) {
+
+                    String[] params = value.split(",");
+                    int track = Integer.parseInt(params[0]);
+                    int subbeat = Integer.parseInt(params[1]);
+                    boolean patternValue = params[2].equals("true");
+
+                    ((DrumChannel)mChannel).setPattern(track, subbeat, patternValue);
+                }
+
             }
 
             @Override
@@ -117,7 +128,18 @@ public class BluetoothConnectFragment extends OMGFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connection.writeString("LAUNCH_PANEL");
+                if (mChannel instanceof DrumChannel) {
+                    String pattern = ((DrumChannel) mChannel).pattern.toString();
+                    Log.d("MGH bluetooth pattern", pattern);
+                    connection.writeString("LAUNCH_DRUMPAD=x;");
+
+                }
+                else {
+                    connection.writeString("LAUNCH_FRETBOARD=" +
+                            mChannel.getLowNote() + "," + mChannel.getHighNote() + ";");
+                }
+
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
         devicesUsed++;

@@ -50,8 +50,10 @@ public class Main extends FragmentActivity {
 
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
+        if (!mPool.isLoaded())
+            mPool.cancelLoading();
         mJam.finish();
     }
 
