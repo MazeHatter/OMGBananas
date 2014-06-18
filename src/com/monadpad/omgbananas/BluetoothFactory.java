@@ -86,17 +86,17 @@ public class BluetoothFactory {
         // a new callback to relay the old one, plus a few things
 
         if (isSetup || setup(new BluetoothSetupCallback() {
-                @Override
-                public void newStatus(String status) {
+            @Override
+            public void newStatus(String status) {
 
-                    BluetoothFactory.this.newStatus(callback, status);
+                BluetoothFactory.this.newStatus(callback, status);
 
-                    if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
-                        isSetup = true;
-                        startAccepting(callback);
-                    }
+                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                    isSetup = true;
+                    startAccepting(callback);
                 }
-            })) {
+            }
+        })) {
 
             newStatus(callback, STATUS_BLUETOOTH_TURNED_ON);
         }
@@ -188,16 +188,16 @@ public class BluetoothFactory {
     public void connectToPairedDevices(final BluetoothCallback callback) {
 
         if (isSetup ||setup(new BluetoothSetupCallback() {
-                @Override
-                public void newStatus(String status) {
-                    BluetoothFactory.this.newStatus(callback, status);
+            @Override
+            public void newStatus(String status) {
+                BluetoothFactory.this.newStatus(callback, status);
 
-                    if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
-                        isSetup = true;
-                        connectToPairedDevices(callback);
-                    }
+                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                    isSetup = true;
+                    connectToPairedDevices(callback);
                 }
-                })) {
+            }
+        })) {
             newStatus(callback, STATUS_BLUETOOTH_TURNED_ON);
         }
         else {
