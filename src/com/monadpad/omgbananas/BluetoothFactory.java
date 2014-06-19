@@ -49,6 +49,8 @@ public class BluetoothFactory {
 
     private ArrayList<BluetoothConnection> mConnections = new ArrayList<BluetoothConnection>();
 
+    private String partialTransmission = "";
+
     public BluetoothFactory(Activity context) {
         ctx = context;
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -81,7 +83,7 @@ public class BluetoothFactory {
     }
 
 
-    public void startAccepting(final BluetoothCallback callback) {
+    public void startAccepting(final BluetoothConnectCallback callback) {
 
         // a new callback to relay the old one, plus a few things
 
@@ -147,8 +149,8 @@ public class BluetoothFactory {
 
 
     private class AcceptThread extends Thread{
-        private BluetoothCallback mCallback;
-        public AcceptThread(BluetoothCallback callback){
+        private BluetoothConnectCallback mCallback;
+        public AcceptThread(BluetoothConnectCallback callback){
             mCallback = callback;
             if (mServerSocket == null ) {
                 BluetoothServerSocket tmp = null;
@@ -185,25 +187,7 @@ public class BluetoothFactory {
 
     }
 
-    public void connectToPairedDevices(final BluetoothCallback callback) {
-
-        if (isSetup ||setup(new BluetoothSetupCallback() {
-            @Override
-            public void newStatus(String status) {
-                BluetoothFactory.this.newStatus(callback, status);
-
-                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
-                    isSetup = true;
-                    connectToPairedDevices(callback);
-                }
-            }
-        })) {
-            newStatus(callback, STATUS_BLUETOOTH_TURNED_ON);
-        }
-        else {
-            // wait for the  bluetooth to turn on
-            return;
-        }
+    public void connectToPairedDevices(final BluetoothConnectCallback callback) {
 
 
         boolean isConnected;
@@ -231,9 +215,9 @@ public class BluetoothFactory {
     private class ConnectThread extends Thread {
         BluetoothDevice mDevice;
         BluetoothSocket mSocket;
-        BluetoothCallback mConnectCallback;
+        BluetoothConnectCallback mConnectCallback;
 
-        public ConnectThread(BluetoothDevice device, BluetoothCallback callback) {
+        public ConnectThread(BluetoothDevice device, BluetoothConnectCallback callback) {
             mConnectCallback = callback;
             BluetoothSocket tmp = null;
             mDevice = device;
@@ -271,7 +255,7 @@ public class BluetoothFactory {
         }
     }
 
-    private void readSocket(BluetoothDevice device, BluetoothSocket socket, BluetoothCallback callback){
+    private void readSocket(BluetoothDevice device, BluetoothSocket socket, BluetoothConnectCallback callback){
 
 
         BluetoothConnection ct = new BluetoothConnection(device, this, socket, callback);
@@ -330,15 +314,26 @@ public class BluetoothFactory {
         Log.d("MGH", "cleanup 4");
     }
 
-    void newStatus(BluetoothCallback callback, String newString) {
+    void newStatus(BluetoothConnectCallback callback, String newString) {
         Log.d("MGH newStatus", newString);
 
         if (callback != null) {
             callback.newStatus(newString);
         }
     }
-    void newData(BluetoothCallback callback, String newString) {
-        Log.d("MGH newData", newString);
+
+    void newData(BluetoothDataCallback callback, String newData) {
+        //Log.d("MGH newData", newString);
+
+        // if this doesn't end with semicolon, save it for when it does
+        // total nasty hack for now
+        if (!newData.substring(newData.length() - 1).equals(";")) {
+            partialTransmission = partialTransmission + newData;
+            return;
+        }
+
+        String newString = partialTransmission + newData;
+        partialTransmission = "";
 
         if (callback != null) {
 
@@ -349,7 +344,7 @@ public class BluetoothFactory {
                     callback.newData(nvp[0], nvp[1]);
                 }
                 else {
-                    callback.newData(command, null);
+                    callback.newData(nvp[0], null);
                 }
             }
         }
@@ -396,5 +391,29 @@ public class BluetoothFactory {
 
     public ArrayList<BluetoothConnection> getConnections() {
         return connectionThreads;
+    }
+
+    public void whenReady(final BluetoothReadyCallback callback) {
+
+        if (isSetup) {
+            callback.onReady();
+            return;
+        }
+
+        boolean lsetup = setup(new BluetoothSetupCallback() {
+            @Override
+            public void newStatus(String status) {
+                //BluetoothFactory.this.newStatus(callback, status);
+
+                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                    isSetup = true;
+                    callback.onReady();
+                }
+            }
+        });
+        if (lsetup) {
+            callback.onReady();
+        }
+
     }
 }

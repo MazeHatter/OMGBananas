@@ -4,6 +4,7 @@ package com.monadpad.omgbananas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 
 public class BluetoothRemoteFragment extends OMGFragment {
@@ -34,7 +38,7 @@ public class BluetoothRemoteFragment extends OMGFragment {
         turnin.setRepeatCount(100);
         spinningImage.startAnimation(turnin);
 
-        mBtf.startAccepting(new BluetoothCallback() {
+        mBtf.startAccepting(new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -45,16 +49,19 @@ public class BluetoothRemoteFragment extends OMGFragment {
                 });
             }
 
-            @Override
-            public void newData(String name, String data) {
-
-                processCommand(name, data);
-
-            }
 
             @Override
             public void onConnected(BluetoothConnection connection) {
                 mConnection = connection;
+
+                connection.setDataCallback(new BluetoothDataCallback() {
+                    @Override
+                    public void newData(String name, String value) {
+
+                            processCommand(name, value);
+
+                    }
+                });
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -80,9 +87,12 @@ public class BluetoothRemoteFragment extends OMGFragment {
         showFragment(f);
     }
 
-    private void launchDrumpad() {
-        DrumFragment f = new DrumFragment();
+    private void launchDrumpad(boolean[][] pattern) {
+        Log.d("MGH", "launch drum pad");
         BluetoothDrumChannel channel = new BluetoothDrumChannel(getActivity(), mPool, mJam, mConnection);
+        channel.setPattern(pattern);
+
+        DrumFragment f = new DrumFragment();
         f.setJam(mJam, channel);
 
         showFragment(f);
@@ -108,8 +118,29 @@ public class BluetoothRemoteFragment extends OMGFragment {
             launchFretboard(Integer.parseInt(lowhigh[0]), Integer.parseInt(lowhigh[1]));
 
         }
-        else if ("LAUNCH_DRUMPAD".equals(name)) {
-            launchDrumpad();
+        else if ("LAUNCH_DRUMPAD".equals(name)) {;
+            boolean[][] pattern;
+            try {
+                Log.d("MGH process launch drumpad", value.substring(value.length() - 20));
+                JSONArray jsonPattern = new JSONArray(value);
+                JSONArray jsonTrackPattern;
+                pattern = new boolean[jsonPattern.length()][];
+                for (int i = 0; i < jsonPattern.length(); i++) {
+                    jsonTrackPattern = jsonPattern.getJSONArray(i);
+                    pattern[i] = new boolean[jsonTrackPattern.length()];
+                    for (int j = 0; j < jsonTrackPattern.length(); j++) {
+                        pattern[i][j] = jsonTrackPattern.getBoolean(j);
+                    }
+                }
+
+                launchDrumpad(pattern);
+
+            }
+            catch (JSONException ex) {
+
+                Log.d("MGH process command launch drumpad", "json exception");
+
+            }
 
         }
         else if (name.equals("JAM_SET_KEY")) {

@@ -35,6 +35,9 @@ public class WelcomeFragment extends OMGFragment {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    if (mPool.isCanceled()) return;
+
                     final AlphaAnimation anim = new AlphaAnimation(0, 1);
                     anim.setDuration(1200);
                     View view = mView.findViewById(R.id.omg_presents_1);
@@ -46,6 +49,8 @@ public class WelcomeFragment extends OMGFragment {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (mPool.isCanceled()) return;
+
                     final AlphaAnimation anim = new AlphaAnimation(0, 1);
                     anim.setDuration(1200);
                     View view = mView.findViewById(R.id.omg_presents_2);
@@ -59,6 +64,9 @@ public class WelcomeFragment extends OMGFragment {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    if (mPool.isCanceled()) return;
+
                     final AlphaAnimation anim = new AlphaAnimation(0, 1);
                     anim.setDuration(2700);
 
@@ -76,6 +84,9 @@ public class WelcomeFragment extends OMGFragment {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    if (mPool.isCanceled()) return;
+
                     final AlphaAnimation anim = new AlphaAnimation(0, 1);
                     anim.setDuration(2000);
                     anim.setFillAfter(true);
@@ -104,6 +115,9 @@ public class WelcomeFragment extends OMGFragment {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    if (mPool.isCanceled()) return;
+
                     final AlphaAnimation anim = new AlphaAnimation(0, 1);
                     anim.setDuration(2000);
                     anim.setFillAfter(true);
@@ -123,6 +137,8 @@ public class WelcomeFragment extends OMGFragment {
                 @Override
                 public void run() {
 
+                    if (mPool.isCanceled()) return;
+
                     final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
                     anim2.setFillAfter(true);
                     anim2.setDuration(2700);
@@ -136,6 +152,7 @@ public class WelcomeFragment extends OMGFragment {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (mPool.isCanceled()) return;
 
                     final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
                     anim2.setFillAfter(true);

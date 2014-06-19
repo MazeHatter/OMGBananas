@@ -14,12 +14,14 @@ public class BluetoothConnection extends Thread {
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private final BluetoothSocket socket;
-    private BluetoothCallback mConnectedCallback;
+    private BluetoothConnectCallback mConnectedCallback;
+    private BluetoothDataCallback mDataCallback;
+
 
     private final static String TAG = "MGH bluetooth connection";
     
     public BluetoothConnection(BluetoothDevice device, BluetoothFactory bluetoothFactory,
-                               BluetoothSocket socket, BluetoothCallback callback){
+                               BluetoothSocket socket, BluetoothConnectCallback callback){
         this.bluetoothFactory = bluetoothFactory;
         mConnectedCallback = callback;
         InputStream tmpIn = null;
@@ -73,9 +75,10 @@ public class BluetoothConnection extends Thread {
 
                 final String data = new String(buffer).substring(0, bytes);
 
-                Log.d("MGH", data);
+                //Log.d("MGH", data);
 
-                bluetoothFactory.newData(mConnectedCallback, data);
+                if (mDataCallback != null)
+                    bluetoothFactory.newData(mDataCallback, data);
             }
 
         }
@@ -124,5 +127,9 @@ public class BluetoothConnection extends Thread {
 
     public BluetoothDevice getDevice() {
         return mDevice;
+    }
+
+    public void setDataCallback(BluetoothDataCallback callback) {
+        mDataCallback = callback;
     }
 }

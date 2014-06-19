@@ -1,6 +1,7 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -347,6 +348,11 @@ public abstract class DrumChannel extends Channel {
                 pattern[i][j] = false;
             }
         }
+    }
+
+    public void setPattern(boolean[][] pattern) {
+        Log.d("MGH", "set pattern " + pattern.length);
+        this.pattern = pattern;
     }
 }
 

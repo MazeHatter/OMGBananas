@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
 public class BluetoothConnectFragment extends OMGFragment {
 
     private View mView;
@@ -37,7 +39,6 @@ public class BluetoothConnectFragment extends OMGFragment {
 
     private void setup() {
         final TextView statusView = (TextView)mView.findViewById(R.id.bt_status);
-        final TextView logView = (TextView)mView.findViewById(R.id.bluetooth_log);
 
         buttons = new Button[]{
                 (Button) mView.findViewById(R.id.bt_device_1),
@@ -50,52 +51,115 @@ public class BluetoothConnectFragment extends OMGFragment {
         }
 
         final Activity activity = getActivity();
-        mBtf.connectToPairedDevices(new BluetoothCallback() {
-            @Override
-            public void newStatus(final String status) {
 
+        final View tryAgain = mView.findViewById(R.id.bt_try_again);
+        tryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connectToPairedDevices();
+            }
+        });
+
+        mBtf.whenReady(new BluetoothReadyCallback() {
+            @Override
+            public void onReady() {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
-                            //statusView.setVisibility(View.GONE);
-                            statusView.setText("Select a Remote:");
-                        } else {
-                            logView.append("\n");
-                            logView.append(status);
+                        statusView.setText("Select a Remote:");
+                        tryAgain.setVisibility(View.VISIBLE);
 
-                        }
                     }
                 });
 
+                connectToPairedDevices();
+
 
             }
+        });
 
+
+
+    }
+
+    private void setupNextButton(final BluetoothConnection connection) {
+        Button button = buttons[devicesUsed];
+        button.setCompoundDrawablesWithIntrinsicBounds(0,
+                R.drawable.device_blue, 0, 0);
+        button.setEnabled(true);
+        button.setText(connection.getDevice().getName());
+
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void newData(String name, String value) {
+            public void onClick(View view) {
+                if (mChannel instanceof DrumChannel) {
+                    String pattern = getPatternString();
+                    Log.d("MGH bluetooth pattern", pattern);
+                    connection.writeString("LAUNCH_DRUMPAD=" + pattern + ";");
 
-                if (name.equals("CHANNEL_PLAY_NOTE")) {
-                    Note note = new Note();
-                    int noteNumber = Integer.parseInt(value);
-                    note.setInstrumentNote(noteNumber);
-                    if (noteNumber == -1) {
-                        note.setRest(true);
+                }
+                else {
+                    connection.writeString("LAUNCH_FRETBOARD=" +
+                            mChannel.getLowNote() + "," + mChannel.getHighNote() + ";");
+                }
+
+                connection.setDataCallback(new BluetoothDataCallback() {
+
+                    @Override
+                    public void newData(String name, String value) {
+
+                        if (name.equals("CHANNEL_PLAY_NOTE")) {
+                            Note note = new Note();
+                            int noteNumber = Integer.parseInt(value);
+                            note.setInstrumentNote(noteNumber);
+                            if (noteNumber == -1) {
+                                note.setRest(true);
+                            }
+
+                            mChannel.playNote(note);
+                        }
+
+                        if (name.equals("CHANNEL_SET_PATTERN")) {
+
+                            String[] params = value.split(",");
+                            int track = Integer.parseInt(params[0]);
+                            int subbeat = Integer.parseInt(params[1]);
+                            boolean patternValue = params[2].equals("true");
+
+                            ((DrumChannel)mChannel).setPattern(track, subbeat, patternValue);
+                        }
+
                     }
 
-                    mChannel.playNote(note);
-                }
+                });
 
-                if (name.equals("CHANNEL_SET_PATTERN")) {
 
-                    String[] params = value.split(",");
-                    int track = Integer.parseInt(params[0]);
-                    int subbeat = Integer.parseInt(params[1]);
-                    boolean patternValue = params[2].equals("true");
+                getActivity().getSupportFragmentManager().popBackStack();
 
-                    ((DrumChannel)mChannel).setPattern(track, subbeat, patternValue);
-                }
 
             }
+        });
+        devicesUsed++;
+
+    }
+
+    private void connectToPairedDevices() {
+        final TextView logView = (TextView)mView.findViewById(R.id.bluetooth_log);
+
+        mBtf.connectToPairedDevices(new BluetoothConnectCallback() {
+            @Override
+            public void newStatus(final String status) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        logView.append("\n");
+                        logView.append(status);
+                    }
+                });
+
+            }
+
 
             @Override
             public void onConnected(final BluetoothConnection connection) {
@@ -115,34 +179,24 @@ public class BluetoothConnectFragment extends OMGFragment {
             }
         });
 
-
     }
 
-    private void setupNextButton(final BluetoothConnection connection) {
-        Button button = buttons[devicesUsed];
-        button.setCompoundDrawablesWithIntrinsicBounds(0,
-                R.drawable.device_blue, 0, 0);
-        button.setEnabled(true);
-        button.setText(connection.getDevice().getName());
+    public String getPatternString() {
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mChannel instanceof DrumChannel) {
-                    String pattern = ((DrumChannel) mChannel).pattern.toString();
-                    Log.d("MGH bluetooth pattern", pattern);
-                    connection.writeString("LAUNCH_DRUMPAD=x;");
+        boolean[][] pattern =((DrumChannel) mChannel).pattern;
 
-                }
-                else {
-                    connection.writeString("LAUNCH_FRETBOARD=" +
-                            mChannel.getLowNote() + "," + mChannel.getHighNote() + ";");
-                }
+        JSONArray json = new JSONArray();
+        JSONArray beats;
+        for (int itrack = 0; itrack < pattern.length; itrack++) {
+            beats = new JSONArray();
 
-                getActivity().getSupportFragmentManager().popBackStack();
+            for (int ibeat = 0; ibeat < pattern[itrack].length; ibeat++) {
+                beats.put(pattern[itrack][ibeat]);
             }
-        });
-        devicesUsed++;
+            json.put(beats);
+        }
+
+        return json.toString();
 
     }
 }

@@ -49,4 +49,5 @@ public class BluetoothDrumChannel extends DrumChannel {
 
         mConnection.writeString("CHANNEL_SET_PATTERN=" + track + "," + subbeat + "," + value + ";");
     }
+
 }

@@ -141,5 +141,13 @@
             />
 
 
+    <Button
+        android:visibility="invisible"
+        android:id="@+id/bt_try_again"
+        android:drawableLeft="@android:drawable/ic_menu_rotate"
+        android:text="Try Again"
+        android:layout_alignParentBottom="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

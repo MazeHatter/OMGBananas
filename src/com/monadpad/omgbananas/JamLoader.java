@@ -67,6 +67,15 @@ public class JamLoader {
                 } else if ("BASSLINE".equals(type)) {
                     loadMelody(mJam.getBassChannel(), part);
 
+                } else if ("CHORDPROGRESSION".equals(type)) {
+                    JSONArray chordsData = part.getJSONArray("data");
+                    int[] newChords = new int[chordsData.length()];
+                    for (int ic = 0; ic < chordsData.length(); ic++) {
+                        newChords[ic] = chordsData.getInt(ic);
+                    }
+                    mJam.setChordProgression(newChords);
+                    loadMelody(mJam.getBassChannel(), part);
+
                 }
             }
 
