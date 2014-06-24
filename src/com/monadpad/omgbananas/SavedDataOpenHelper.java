@@ -58,8 +58,10 @@ public class SavedDataOpenHelper extends SQLiteOpenHelper {
 
     public Cursor getSavedCursor() {
         SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
+        //db.close();
 
-        return db.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
+        return cursor;
 
     }
 
@@ -72,6 +74,7 @@ public class SavedDataOpenHelper extends SQLiteOpenHelper {
             ret = cursor.getString(cursor.getColumnIndex("data"));
         }
         cursor.close();
+        db.close();
         return ret;
     }
 

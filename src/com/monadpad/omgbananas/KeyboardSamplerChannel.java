@@ -1,13 +1,14 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
 
 public class KeyboardSamplerChannel extends Channel {
 
 
     public KeyboardSamplerChannel(Context context, OMGSoundPool pool) {
         super(context, pool);
+
+        octave = 5;
 
         highNote = 69;
         lowNote = 9;

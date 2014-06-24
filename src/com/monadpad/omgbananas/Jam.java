@@ -3,6 +3,7 @@ package com.monadpad.omgbananas;
 import android.content.Context;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -160,9 +161,9 @@ public class Jam {
 
     }
 
-    public ArrayList<Note> makeChannelNotes(Channel channel, int transpose) {
+    public NoteList makeChannelNotes(Channel channel) {
 
-        ArrayList<Note> notes = mm.getCurrentMelody();
+        NoteList notes = mm.getCurrentMelody();
 
         if (rand.nextInt(5) == 0) {
             mm.makeMotif();
@@ -173,7 +174,8 @@ public class Jam {
             mm.makeMelodyFromMotif(beats);
         }
 
-        notes = mm.applyScale(notes, currentChord, transpose);
+        channel.setBasicMelody(notes);
+        notes = mm.applyScale(notes, currentChord);
         channel.setNotes(notes);
         channel.resetI();
 
@@ -307,11 +309,11 @@ public class Jam {
         if (progressionI >= progression.length || progressionI < 0) {
             progressionI = 0;
         }
-        int p = progression[progressionI];
+        int chord = progression[progressionI];
 
-        basslineChannel.setNotes(mm.applyScale(basslineChannel.getNotes().list, p, 0));
-        guitarChannel.setNotes(mm.applyScale(guitarChannel.getNotes().list, p, 12));
-        keyboardChannel.setNotes(mm.applyScale(keyboardChannel.getNotes().list, p, 12));
+        basslineChannel.setNotes(mm.applyScale(basslineChannel.getBasicMelody(), chord));
+        guitarChannel.setNotes(mm.applyScale(guitarChannel.getBasicMelody(), chord));
+        keyboardChannel.setNotes(mm.applyScale(keyboardChannel.getBasicMelody(), chord));
 
     }
 
@@ -349,11 +351,11 @@ public class Jam {
 
                 break;
             case 5:
-                makeChannelNotes(basslineChannel, 0);
+                makeChannelNotes(basslineChannel);
 
                 break;
             case 6:
-                makeChannelNotes(keyboardChannel, 12);
+                makeChannelNotes(keyboardChannel);
 
                 break;
 
@@ -409,9 +411,10 @@ public class Jam {
             samplerChannel.enable();
         }
 
-        makeChannelNotes(guitarChannel, 12);
-        makeChannelNotes(keyboardChannel, 12);
+        makeChannelNotes(guitarChannel);
+        makeChannelNotes(keyboardChannel);
 
+        Log.d("MGH every rule change", getData());
 
         playbackThread.i = 0;
 
@@ -494,7 +497,9 @@ public class Jam {
 
         sb.append("{\"type\": \"SECTION\", \"scale\": \"");
         sb.append(mm.getScale());
-        sb.append("\", \"key\": ");
+        sb.append("\", \"ascale\": [");
+        sb.append(mm.getScale());
+        sb.append("], \"rootNote\": ");
         sb.append(mm.getKey());
         sb.append(", \"beats\" :");
         sb.append(beats);
@@ -513,15 +518,15 @@ public class Jam {
 
         sb.append(", ");
 
-        getBasslineData(sb);
+        getChannelData(basslineChannel, "BASSLINE", "PRESET_BASS", sb);
 
         sb.append(", ");
 
-        getSynthData(sb);
+        getChannelData(keyboardChannel, "MELODY", "PRESET_SYNTH1", sb);
 
         sb.append(", ");
 
-        getElectricData(sb);
+        getChannelData(guitarChannel, "MELODY", "PRESET_GUITAR1", sb);
 
         sb.append(", ");
 
@@ -529,21 +534,27 @@ public class Jam {
 
         sb.append("]}");
 
+        Log.d("MGH getData", sb.toString());
         return sb.toString();
 
     }
 
+    public void getChannelData(Channel channel, String type, String sound, StringBuilder sb) {
 
-    public void getBasslineData(StringBuilder sb) {
-
-        sb.append("{\"type\" : \"BASSLINE\", \"sound\": \"PRESET_BASS\", \"scale\": \"");
+        sb.append("{\"type\" : \"");
+        sb.append(type);
+        sb.append("\", \"sound\": \"");
+        sb.append(sound);
+        sb.append("\", \"scale\": \"");
         sb.append(mm.getScale());
-        sb.append("\", \"key\": ");
+        sb.append("\", \"rooteNote\": ");
         sb.append(mm.getKey());
+        sb.append(", \"octave\": ");
+        sb.append(channel.getOctave());
         sb.append(", \"notes\" : [");
 
         boolean first = true;
-        for (Note note : basslineChannel.getNotes().list) {
+        for (Note note : channel.getBasicMelody()) {
 
             if (first)
                 first = false;
@@ -555,10 +566,8 @@ public class Jam {
             sb.append(", \"beats\": ");
             sb.append(note.getBeats());
             if (!note.isRest()) {
-                sb.append(", \"scaledNote\" :");
-                sb.append(note.getNote());
                 sb.append(", \"note\" :");
-                sb.append(note.getNakedNote());
+                sb.append(note.getNote());
             }
             sb.append("}");
         }
@@ -566,71 +575,6 @@ public class Jam {
 
     }
 
-    public void getSynthData(StringBuilder sb) {
-
-        sb.append("{\"type\" : \"MELODY\", \"sound\": \"PRESET_SYNTH1\", \"scale\": \"");
-        sb.append(mm.getScale());
-        sb.append("\", \"key\": ");
-        sb.append(mm.getKey());
-        sb.append(", \"notes\" : [");
-
-        boolean first = true;
-
-        for (Note note : keyboardChannel.getNotes().list) {
-            if (first)
-                first = false;
-            else
-                sb.append(", ");
-
-            sb.append("{\"rest\": ");
-            sb.append(note.isRest());
-            sb.append(", \"beats\": ");
-            sb.append(note.getBeats());
-            if (!note.isRest()) {
-                sb.append(", \"scaledNote\" :");
-                sb.append(note.getNote());
-                sb.append(", \"note\" :");
-                sb.append(note.getNakedNote());
-            }
-            sb.append("}");
-        }
-        sb.append("]}");
-
-    }
-
-    public void getElectricData(StringBuilder sb) {
-
-        sb.append("{\"type\" : \"MELODY\", \"sound\": \"PRESET_GUITAR1\", \"scale\": \"");
-        sb.append(mm.getScale());
-        sb.append("\", \"key\": ");
-        sb.append(mm.getKey());
-        sb.append(", \"notes\" : [");
-
-        boolean first = true;
-
-        for (Note note : guitarChannel.getNotes().list) {
-            if (first)
-                first = false;
-            else
-                sb.append(", ");
-
-            sb.append("{\"rest\": ");
-            sb.append(note.isRest());
-            sb.append(", \"beats\": ");
-            sb.append(note.getBeats());
-            if (!note.isRest()) {
-                sb.append(", \"instrumentNote\" :");
-                sb.append(note.getInstrumentNote());
-                sb.append(", \"scaledNote\" :");
-                sb.append(note.getNote());
-                sb.append(", \"note\" :");
-                sb.append(note.getNakedNote());
-            }
-            sb.append("}");
-        }
-        sb.append("]}");
-
-    }
 
 
     public void getChordsData(StringBuilder sb) {
@@ -664,7 +608,7 @@ public class Jam {
 
         //half the time, drums from the bass
         if (false && rand.nextBoolean()) {
-            drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes().list);
+            drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes());
         }
         else {
             // make them separate
@@ -674,15 +618,15 @@ public class Jam {
     }
 
     public void monkeyWithBass() {
-        makeChannelNotes(basslineChannel, 0);
+        makeChannelNotes(basslineChannel);
     }
 
     public void monkeyWithSynth() {
-        makeChannelNotes(keyboardChannel, 12);
+        makeChannelNotes(keyboardChannel);
     }
 
     public void monkeyWithGuitar() {
-        makeChannelNotes(guitarChannel, 12);
+        makeChannelNotes(guitarChannel);
     }
 
     public void monkeyWithChords() {
@@ -766,8 +710,8 @@ public class Jam {
             return;
 
         int i = channel.getI();
-        if (i <  channel.getNotes().list.size()) {
-            Note note = channel.getNotes().list.get(i);
+        if (i <  channel.getNotes().size()) {
+            Note note = channel.getNotes().get(i);
             if (note.getBeatPosition() == beat) {
 
                 channel.playNote(note);
@@ -807,7 +751,7 @@ public class Jam {
     }
 
     public void makeDrumbeatFromMelody() {
-        drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes().list);
+        drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes());
     }
 
     public boolean isSoundPoolInitialized() {

@@ -13,6 +13,8 @@ public class ElectricSamplerChannel extends Channel {
     public ElectricSamplerChannel(Context context, OMGSoundPool pool) {
         super(context, pool);
 
+        octave = 5;
+
         highNote = 85;
         lowNote = 40;
 

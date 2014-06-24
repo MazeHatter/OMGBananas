@@ -9,7 +9,8 @@ public class OMGHelper {
 
     private static String mSubmitUrl = "omg";
     //private static String mHomeUrl = "http://10.0.2.2:8888/";
-    private static String mHomeUrl = "http://openmusicgallery.appspot.com/";
+    private static String mHomeUrl = "http://192.168.1.116:8888/";
+    //private static String mHomeUrl = "http://openmusicgallery.appspot.com/";
     private static String SHARE_URL_SUFFIX = "?func=share&type=SECTION&id=";
 
     private Context mContext;

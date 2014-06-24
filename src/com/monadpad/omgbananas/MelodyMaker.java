@@ -5,11 +5,6 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * User: m
- * Date: 9/29/13
- * Time: 9:32 PM
- */
 public class MelodyMaker {
 
     Random rand;
@@ -17,14 +12,9 @@ public class MelodyMaker {
 
     int key;
 
-    ArrayList<Note> currentMelody;
-    ArrayList<Note> mCurrentMotif;
+    NoteList currentMelody;
+    NoteList mCurrentMotif;
 
-
-    private boolean madeBassLine = false;
-
-    //    String[] forms = {"A", "AA", "ABAB", "AAAB", "ABAC" };
-    String[] forms = {"AAAA" };
 
     int[] ascale;
 
@@ -33,9 +23,6 @@ public class MelodyMaker {
     String[] scales;
     String[] scaleCaptions;
 
-    private int instrumentCount;
-
-    private int keyI;
     private int scaleI;
 
     public MelodyMaker(Context context) {
@@ -51,10 +38,6 @@ public class MelodyMaker {
         pickRandomKey();
         pickRandomScale();
 
-        instrumentCount = context.getResources().getStringArray(R.array.instruments).length;
-
-
-//        Log.d("MGH key name", keyName);
     }
 
     public String getKeyName() {
@@ -78,7 +61,7 @@ public class MelodyMaker {
         return makeMelody(totalBeats, -1.0d);
     }
 
-    public ArrayList<Note> makeMelody(double totalBeats, double beatBias) {
+    public NoteList makeMelody(double totalBeats, double beatBias) {
 
         // use the motif approach
         if (rand.nextBoolean()) {
@@ -86,7 +69,7 @@ public class MelodyMaker {
         }
 
 
-        ArrayList<Note> line = new ArrayList<Note>();
+        NoteList line = new NoteList();
 
         // choose a duration to tend toward
         if (beatBias == -1.0d) {
@@ -155,7 +138,7 @@ public class MelodyMaker {
         // go backwards
         playedBeats = 0.0d;
         if (rand.nextInt(3) == 0) {
-            ArrayList<Note> line2 = new ArrayList<Note>();
+            NoteList line2 = new NoteList();
             for (int ii = line.size(); ii > 0; ii--) {
                 currentNote = line.get(ii - 1);
                 currentNote.setBeatPosition(playedBeats);
@@ -169,19 +152,14 @@ public class MelodyMaker {
         return line;
     }
 
-    public void applyScale(Channel channel, int chord, int transpose) {
 
-        channel.setNotes(applyScale(channel.getNotes().list, chord,  transpose));
-
-    }
-
-    public ArrayList<Note> applyScale(ArrayList<Note> notes, int chord, int transpose) {
+    public NoteList applyScale(NoteList notes, int chord) {
 
         int oldNoteNumber;
         int newNoteNumber;
         int octaves;
 
-        ArrayList<Note> returnLine = new ArrayList<Note>();
+        NoteList returnLine = new NoteList();
         Note newNote;
         Note note;
         for (int i = 0; i < notes.size(); i++) {
@@ -191,7 +169,7 @@ public class MelodyMaker {
             octaves = 0;
 
             newNote = note.clone();
-            oldNoteNumber = newNote.getNakedNote(); //getNote();
+            oldNoteNumber = newNote.getNote();
             newNoteNumber = oldNoteNumber + chord;
             returnLine.add(newNote);
 
@@ -210,55 +188,9 @@ public class MelodyMaker {
                 newNoteNumber = newNoteNumber + ascale.length;
             }
 
-            newNoteNumber = (int)ascale[newNoteNumber] + transpose;
+            newNoteNumber = ascale[newNoteNumber];
 
             newNote.setNote(key + newNoteNumber + octaves * 12);
-
-        }
-
-        return returnLine;
-    }
-
-    public ArrayList<Note> moveChord(ArrayList<Note> notes, int chord) {
-
-        int oldNote;
-
-        ArrayList<Note> returnLine = new ArrayList<Note>();
-        Note newNote;
-        Note note;
-        for (int i = 0; i < notes.size(); i++) {
-
-            note = notes.get(i);
-
-            newNote = note.cloneNaked();
-            oldNote = newNote.getNote();
-            returnLine.add(newNote);
-
-            if (newNote.isRest()) {
-                continue;
-            }
-
-            newNote.setNote(oldNote + chord);
-
-        }
-
-        return returnLine;
-    }
-
-
-    public ArrayList<Note> transpose(ArrayList<Note> notes, int transpose) {
-
-        ArrayList<Note> returnLine = new ArrayList<Note>();
-        Note newNote;
-        Note note;
-        for (int i = 0; i < notes.size(); i++) {
-
-            note = notes.get(i);
-            newNote = note.clone();
-            returnLine.add(newNote);
-
-
-            newNote.setNote(newNote.getNote() + transpose);
 
         }
 
@@ -294,9 +226,9 @@ public class MelodyMaker {
 
     }
 
-    public ArrayList<Note> makeMelodyFromMotif(ArrayList<Note> motif, double totalbeats) {
+    public NoteList makeMelodyFromMotif(ArrayList<Note> motif, double totalbeats) {
 
-        ArrayList<Note> ret = new ArrayList<Note>();
+        NoteList ret = new NoteList();
 
         int loops = (int)(totalbeats / 2.0d);
 
@@ -351,16 +283,16 @@ public class MelodyMaker {
         return ret;
     }
 
-    public ArrayList<Note> makeMelodyFromMotif(double totalbeats) {
-        ArrayList<Note> motif = makeMotif();
+    public NoteList makeMelodyFromMotif(double totalbeats) {
+        NoteList motif = makeMotif();
         currentMelody = makeMelodyFromMotif(motif, totalbeats);
 
         return currentMelody;
     }
 
     // a 2 beat motif
-    public ArrayList<Note> makeMotif() {
-        ArrayList<Note> ret = new ArrayList<Note>();
+    public NoteList makeMotif() {
+        NoteList ret = new NoteList();
 
         double beatsNeeded = 2.0d;
         double beatsUsed = 0.0d;
@@ -408,7 +340,7 @@ public class MelodyMaker {
     public ArrayList<Note> melodify(ArrayList<Note> motif) {
 
         int lastNote = 0;
-        int notesAway = 0;
+        int notesAway;
         boolean goingUp = rand.nextBoolean();
 
         Note note;
@@ -488,7 +420,7 @@ public class MelodyMaker {
         key = keyIndex;
     }
 
-    public ArrayList<Note> getCurrentMelody() {
+    public NoteList getCurrentMelody() {
         return currentMelody;
     }
 

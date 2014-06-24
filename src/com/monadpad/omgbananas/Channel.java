@@ -1,9 +1,6 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
-
-import java.util.ArrayList;
 
 public abstract class Channel {
 
@@ -25,6 +22,7 @@ public abstract class Channel {
     protected boolean isAScale = true;
 
     protected NoteList mNoteList = new NoteList();
+    protected NoteList mBasicMelody = new NoteList();
 
     protected int playingI = 0;
 
@@ -38,6 +36,8 @@ public abstract class Channel {
     protected Context context;
 
     protected float volume;
+
+    protected int octave = 3;
 
     public Channel(Context context, OMGSoundPool pool) {
         mPool = pool;
@@ -143,20 +143,30 @@ public abstract class Channel {
         return mNoteList;
     }
 
-    public void setNotes(ArrayList<Note> notes) {
-        mNoteList.list = notes;
+    public void setNotes(NoteList notes) {
+        mNoteList = notes;
 
         for (Note note : notes) {
-            int noteToPlay = note.getNote() - lowNote;
-
+            /*int noteToPlay = note.getNote() - lowNote;
             while (noteToPlay < 0) {
                 noteToPlay += 12;
             }
             while (noteToPlay >= highNote - lowNote) {
                 noteToPlay -= 12;
             }
-
             note.setInstrumentNote(noteToPlay);
+            */
+
+            int noteToPlay = note.getNote() + 12 * octave;
+            while (noteToPlay < lowNote) {
+                noteToPlay += 12;
+            }
+            while (noteToPlay > highNote) {
+                noteToPlay -= 12;
+            }
+
+
+            note.setInstrumentNote(noteToPlay - lowNote);
         }
 
         state = STATE_PLAYBACK;
@@ -179,11 +189,23 @@ public abstract class Channel {
     }
 
     public void clearNotes() {
-        mNoteList.list.clear();
+        mNoteList.clear();
         state = STATE_LIVEPLAY;
     }
 
     public int getSoundCount() {
         return rids.length;
+    }
+
+    public int getOctave() {
+        return octave;
+    }
+
+    public void setBasicMelody(NoteList noteList) {
+        mBasicMelody = noteList;
+    }
+
+    public NoteList getBasicMelody() {
+        return mBasicMelody;
     }
 }

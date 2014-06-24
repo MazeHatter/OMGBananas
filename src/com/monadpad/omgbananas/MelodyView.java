@@ -1,7 +1,11 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -123,7 +127,7 @@ public class MelodyView extends View {
 
         Note note;
 
-        ArrayList<Note> list = mList.list;
+        NoteList list = mList;
 
         int lineStarts = 0;
         int lineEnds = -1;

@@ -7,9 +7,6 @@ package com.monadpad.omgbananas;
  */
 public class Note {
 
-    private Note naked;
-    private Note previous;
-
     private double mBeatPosition;
     private double mBeats;
     private int noteNumber;
@@ -63,34 +60,9 @@ public class Note {
         ret.noteNumber = noteNumber;
         ret.mBeatPosition = mBeatPosition;
 
-        if (naked != null) {
-            ret.naked = naked;
-        }
-        else {
-            ret.naked = this;
-        }
-
-        ret.previous = this;
-
         return ret;
     }
 
-    public Note cloneNaked() {
-        if (naked == null) {
-            return clone();
-        }
-
-        Note ret = new Note();
-        ret.mBeats = naked.mBeats;
-        ret.isrest = naked.isrest;
-        ret.noteNumber = naked.noteNumber;
-        ret.naked = naked;
-        ret.previous = this;
-
-        ret.mBeatPosition = mBeatPosition;
-
-        return ret;
-    }
 
     public void setBeatPosition(double pos) {
         mBeatPosition = pos;
@@ -100,14 +72,6 @@ public class Note {
         return mBeatPosition;
     }
 
-    public double getNakedBeats() {
-        return naked == null ? mBeats : naked.mBeats;
-    }
-
-    public int getNakedNote() {
-        return naked == null ? noteNumber : naked.noteNumber;
-    }
-
     public boolean isPlaying() {
         return isplaying;
     }
@@ -115,13 +79,4 @@ public class Note {
         isplaying = value;
     }
 
-    public void setNakedNote(int nakedNote) {
-        if (naked == null) {
-            naked = new Note();
-            naked.setRest(isRest());
-            naked.setBeats(getBeats());
-        }
-
-        naked.setNote(nakedNote);
-    }
 }

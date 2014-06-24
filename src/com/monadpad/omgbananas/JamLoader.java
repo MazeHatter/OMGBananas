@@ -6,8 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class JamLoader {
 
     private Jam mJam;
@@ -74,13 +72,15 @@ public class JamLoader {
                         newChords[ic] = chordsData.getInt(ic);
                     }
                     mJam.setChordProgression(newChords);
-                    loadMelody(mJam.getBassChannel(), part);
 
                 }
+
             }
 
+            mJam.onNewLoop();
 
             good = true;
+
         } catch (JSONException e) {
             Log.d("MGH loaddata exception", e.getMessage());
             e.printStackTrace();
@@ -120,8 +120,8 @@ public class JamLoader {
 
     private void loadMelody(Channel channel, JSONObject part) throws JSONException {
 
-        ArrayList<Note> notes = channel.getNotes().list;
-        notes.clear();
+        NoteList notes = new NoteList();
+        channel.setBasicMelody(notes);
         double playedBeats = 0.0d;
 
         JSONArray notesData = part.getJSONArray("notes");
@@ -139,14 +139,9 @@ public class JamLoader {
             newNote.setRest(noteData.getBoolean("rest"));
 
             if (!newNote.isRest()) {
-                newNote.setNote(noteData.getInt("scaledNote"));
-                newNote.setNakedNote(noteData.getInt("note"));
-
-                if (noteData.has("instrumentNote"))
-                    newNote.setInstrumentNote(noteData.getInt("instrumentNote"));
+                newNote.setNote(noteData.getInt("note"));
 
             }
-
             notes.add(newNote);
         }
 
