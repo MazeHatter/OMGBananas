@@ -66,7 +66,6 @@ public abstract class Channel {
         finishCurrentNoteAt(-1);
 
         if (!note.isRest()) {
-
             int noteToPlay = note.getInstrumentNote();
             playingId = mPool.play(ids[noteToPlay], volume, volume, 10, 0, 1);
 

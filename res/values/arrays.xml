@@ -7,8 +7,6 @@
         <item>Minor</item>
         <item>Pentatonic</item>
         <item>Blues</item>
-        <item>Octave</item>
-        <item>Theremin</item>
     </string-array>
 
     <string-array name="quantizer_values">

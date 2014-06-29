@@ -10,8 +10,8 @@ public class KeyboardSamplerChannel extends Channel {
 
         octave = 5;
 
-        highNote = 69;
-        lowNote = 9;
+        highNote = 93;
+        lowNote = 33;
 
         volume = 0.2f;
         rids = new int[61];

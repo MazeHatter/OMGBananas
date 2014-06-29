@@ -34,12 +34,11 @@
             android:text="(Loading...)"/>-->
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/bt_remote"
         android:layout_alignParentTop="true"
-        android:orientation="vertical"
         android:id="@+id/goback"
         android:visibility="gone">
 
@@ -47,18 +46,44 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:drawableRight="@android:drawable/ic_media_ff"
-            android:id="@+id/return_to_omg_bananas"></Button>
+            android:id="@+id/return_to_omg_bananas"
+            android:layout_alignParentTop="true"></Button>
 
-        <TextView android:text="Press Back again to Exit"
+        <TextView android:text="@string/cap_source_code"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/source_link"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            />
+        <TextView android:text="@string/cap_suggestions"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/issues_link"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_below="@id/source_link"
+            android:layout_marginTop="10dp"
+            />
+        <TextView android:text="@string/exit_text"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:id="@+id/txt_press_back"
             android:textSize="22sp"
+            android:layout_above="@id/source_link"
+            android:autoLink="web"
             android:gravity="center"
+            android:layout_marginBottom="30dp"
             />
-    </LinearLayout>
+
+    </RelativeLayout>
 
 
     <LinearLayout

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class WelcomeFragment extends OMGFragment {
 
@@ -130,7 +133,7 @@ public class WelcomeFragment extends OMGFragment {
                     view.setVisibility(View.VISIBLE);
 
                 }
-            }, 12000);
+            }, 10500);
 
 
             mHandler.postDelayed(new Runnable() {
@@ -263,6 +266,15 @@ public class WelcomeFragment extends OMGFragment {
         mView.findViewById(R.id.welcome_info).setVisibility(View.GONE);
         mView.findViewById(R.id.loading_info).setVisibility(View.GONE);
         mView.findViewById(R.id.goback).setVisibility(View.VISIBLE);
+
+        TextView source = (TextView)mView.findViewById(R.id.source_link);
+        source.setText(Html.fromHtml(getString(R.string.cap_source_code)));
+        source.setMovementMethod(LinkMovementMethod.getInstance());
+        source.setClickable(true);
+        TextView issues = (TextView)mView.findViewById(R.id.issues_link);
+        issues.setText(Html.fromHtml(getString(R.string.cap_suggestions)));
+        issues.setMovementMethod(LinkMovementMethod.getInstance());
+        issues.setClickable(true);
 
     }
 }

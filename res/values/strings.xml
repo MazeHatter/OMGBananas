@@ -15,4 +15,9 @@
     <string name="cancel">Cancel</string>
     <string name="edit_to_draw">Edit</string>
     <string name="saved_list_title">Saved</string>
+    <string name="exit_text">Press Back again to Exit</string>
+    <string name="cap_source_code">&lt;a href="https://github.com/MazeHatter/OMGBananas">Source Code&lt;/a></string>
+
+    <string name="cap_suggestions">&lt;a href="mailto:maze@sketchatune.com">Make a suggestion&lt;/a></string>
+
 </resources>

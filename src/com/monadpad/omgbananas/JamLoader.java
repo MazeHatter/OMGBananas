@@ -34,8 +34,8 @@ public class JamLoader {
                 mJam.setSubbeatLength(jsonData.getInt("subbeatMillis"));
             }
 
-            if (jsonData.has("key")) {
-                mJam.setKey(jsonData.getInt("key") % 12);
+            if (jsonData.has("rootNote")) {
+                mJam.setKey(jsonData.getInt("rootNote") % 12);
             }
 
             if (jsonData.has("scale")) {

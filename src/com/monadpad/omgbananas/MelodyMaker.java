@@ -52,7 +52,7 @@ public class MelodyMaker {
 
     public void pickRandomScale() {
         // pick a scale
-        setScale(rand.nextInt(scales.length - 2)); // -2, ignore octave and thermin scale
+        setScale(rand.nextInt(scales.length));
     }
 
 
