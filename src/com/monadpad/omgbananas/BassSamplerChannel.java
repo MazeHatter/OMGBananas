@@ -1,8 +1,6 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
-import android.util.Log;
 
 /**
  * User: m
@@ -12,8 +10,8 @@ import android.util.Log;
 public class BassSamplerChannel extends Channel {
 
 
-    public BassSamplerChannel(Context context, OMGSoundPool pool) {
-        super(context, pool);
+    public BassSamplerChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         highNote = 48;
         lowNote = 28;

@@ -1,7 +1,11 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -137,7 +141,7 @@ public class ChordsView extends View {
 
             }
 
-            //canvas.drawText(Integer.toString(chords[i]), at, boxHeight * 2, paint);
+            //canvas.drawText(Integer.toString(chords[ibeat]), at, boxHeight * 2, paint);
 
         }
 

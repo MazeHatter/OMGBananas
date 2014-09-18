@@ -9,7 +9,10 @@ public class Note {
 
     private double mBeatPosition;
     private double mBeats;
-    private int noteNumber;
+//    private int noteNumber;
+
+    private int basicNote;
+    private int scaledNote;
 
     private int instrumentNoteNumber;
 
@@ -28,12 +31,12 @@ public class Note {
 
     }
 
-    public void setNote(int number) {
-        noteNumber = number;
+    public void setBasicNote(int number) {
+        basicNote = number;
     }
 
-    public int getNote() {
-        return noteNumber;
+    public int getBasicNote() {
+        return basicNote;
     }
 
     public void setInstrumentNote(int number) {
@@ -52,12 +55,19 @@ public class Note {
         return mBeats;
     }
 
+    public void setScaledNote(int newScaledNote) {
+        scaledNote = newScaledNote;
+    }
+
+    public int getScaledNote() {
+        return scaledNote;
+    }
 
     public Note clone() {
         Note ret = new Note();
         ret.mBeats = mBeats;
         ret.isrest = isrest;
-        ret.noteNumber = noteNumber;
+        ret.basicNote = basicNote;
         ret.mBeatPosition = mBeatPosition;
 
         return ret;

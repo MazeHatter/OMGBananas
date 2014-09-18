@@ -10,8 +10,8 @@ import android.content.Context;
 public class ElectricSamplerChannel extends Channel {
 
 
-    public ElectricSamplerChannel(Context context, OMGSoundPool pool) {
-        super(context, pool);
+    public ElectricSamplerChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         octave = 5;
 

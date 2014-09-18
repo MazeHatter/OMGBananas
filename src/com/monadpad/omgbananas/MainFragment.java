@@ -86,6 +86,14 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        drumMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mJam.getDrumChannel().clearNotes();
+                return true;
+            }
+        });
+
         drumMonkeyHead = drumControls.findViewById(R.id.libeniz_head);
         drumMonkeyHead.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +140,14 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 view.setBackgroundColor(mJam.toggleMuteBassline() ?
                         Color.GREEN : Color.RED);
+            }
+        });
+
+        bassMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mJam.getBassChannel().clearNotes();
+                return true;
             }
         });
 
@@ -196,6 +212,14 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        guitarMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mJam.getGuitarChannel().clearNotes();
+                return true;
+            }
+        });
+
         guitarControls.findViewById(R.id.track_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -256,6 +280,15 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        samplerMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mJam.getSamplerChannel().clearNotes();
+                return true;
+            }
+        });
+
+
         samplerControls.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -283,6 +316,13 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        synthMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mJam.getSynthChannel().clearNotes();
+                return true;
+            }
+        });
 
         synthMonkeyHead = keyboardControls.findViewById(R.id.libeniz_head);
         synthMonkeyHead.setOnClickListener(new View.OnClickListener() {

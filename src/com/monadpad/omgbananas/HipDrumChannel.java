@@ -1,12 +1,11 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.media.SoundPool;
 
 public class HipDrumChannel extends DrumChannel {
 
-    public HipDrumChannel(Context context, OMGSoundPool pool, Jam jam) {
-        super(context, pool, jam);
+    public HipDrumChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         isAScale = false;
         highNote = 7;

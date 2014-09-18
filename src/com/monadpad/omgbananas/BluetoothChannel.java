@@ -11,9 +11,9 @@ public class BluetoothChannel extends Channel {
 
     private BluetoothConnection mConnection;
 
-    public BluetoothChannel(Context context, OMGSoundPool pool,
+    public BluetoothChannel(Context context, Jam jam, OMGSoundPool pool,
                             BluetoothConnection connection) {
-        super(context, pool);
+        super(context, jam, pool);
         mConnection = connection;
 
         highNote = 85;
@@ -26,12 +26,15 @@ public class BluetoothChannel extends Channel {
 
     @Override
     public void playNote(Note note) {
-        int noteNumber = note.isRest() ? -1 : note.getInstrumentNote();
-        mConnection.writeString("CHANNEL_PLAY_NOTE=" + noteNumber + ";");
+        int instrumentNumber = note.isRest() ? -1 : note.getInstrumentNote();
+        int basicNote = note.isRest() ? -1 : note.getBasicNote();
+
+        mConnection.writeString("CHANNEL_PLAY_NOTE=" + basicNote + "," + instrumentNumber + ";");
     }
 
-    public void setLowHigh(int low, int high) {
+    public void setLowHigh(int low, int high, int octave) {
         lowNote = low;
         highNote = high;
+        this.octave = octave;
     }
 }

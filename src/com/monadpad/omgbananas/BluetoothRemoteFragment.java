@@ -78,10 +78,10 @@ public class BluetoothRemoteFragment extends OMGFragment {
         return mView;
     }
 
-    private void launchFretboard(int low, int high) {
+    private void launchFretboard(int low, int high, int octave) {
         GuitarFragment f = new GuitarFragment();
-        BluetoothChannel channel = new BluetoothChannel(getActivity(), mPool, mConnection);
-        channel.setLowHigh(low, high);
+        BluetoothChannel channel = new BluetoothChannel(getActivity(), mJam, mPool, mConnection);
+        channel.setLowHigh(low, high, octave);
         f.setJam(mJam, channel);
 
         showFragment(f);
@@ -115,7 +115,8 @@ public class BluetoothRemoteFragment extends OMGFragment {
 
         if ("LAUNCH_FRETBOARD".equals(name)) {
             String[] lowhigh = value.split(",");
-            launchFretboard(Integer.parseInt(lowhigh[0]), Integer.parseInt(lowhigh[1]));
+            launchFretboard(Integer.parseInt(lowhigh[0]), Integer.parseInt(lowhigh[1]),
+                    Integer.parseInt(lowhigh[2]));
 
         }
         else if ("LAUNCH_DRUMPAD".equals(name)) {;

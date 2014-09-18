@@ -28,8 +28,8 @@ public abstract class DrumChannel extends Channel {
 
     protected String kitName = "";
 
-    public DrumChannel(Context context, OMGSoundPool pool, Jam jam) {
-        super(context, pool);
+    public DrumChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         rand = jam.getRand();
 
@@ -353,6 +353,11 @@ public abstract class DrumChannel extends Channel {
     public void setPattern(boolean[][] pattern) {
         Log.d("MGH", "set pattern " + pattern.length);
         this.pattern = pattern;
+    }
+
+    @Override
+    public void clearNotes() {
+        clearPattern();
     }
 }
 

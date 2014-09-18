@@ -4,8 +4,8 @@ import android.content.Context;
 
 public class RockDrumChannel extends DrumChannel {
 
-    public RockDrumChannel(Context context, OMGSoundPool pool, Jam jam) {
-        super(context, pool, jam);
+    public RockDrumChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         isAScale = false;
         highNote = 7;

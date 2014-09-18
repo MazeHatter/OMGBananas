@@ -5,8 +5,8 @@ import android.content.Context;
 public class KeyboardSamplerChannel extends Channel {
 
 
-    public KeyboardSamplerChannel(Context context, OMGSoundPool pool) {
-        super(context, pool);
+    public KeyboardSamplerChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         octave = 5;
 

@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -73,6 +74,8 @@ public class GuitarView extends View {
     private int lowNote;
 
     private boolean modified = false;
+
+    private int rootFret = 0;
 
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -168,8 +171,7 @@ public class GuitarView extends View {
     public boolean onTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
-        if (action == MotionEvent.ACTION_DOWN ||
-                action == MotionEvent.ACTION_MOVE) {
+        if (action == MotionEvent.ACTION_DOWN) {
 
             if (!modified) {
                 modified = true;
@@ -186,21 +188,45 @@ public class GuitarView extends View {
 
             touchingFret = fretMapping.length - touchingFret - 1;
 
-            if (touchingFret != lastFret) {
-                lastFret = touchingFret;
-                Note note = new Note();
-                note.setNote(fretMapping[touchingFret]);
-                note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
-                mChannel.playNote(note);
-            }
-
+            lastFret = touchingFret;
+            Note note = new Note();
+            note.setBasicNote(touchingFret - rootFret);
+            note.setScaledNote(fretMapping[touchingFret]);
+            note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
+            mChannel.playLiveNote(note);
 
         }
+
+        if (action == MotionEvent.ACTION_MOVE) {
+            if (lastFret > -1) {
+                touchingString = (int)Math.floor(event.getX() / boxWidth);
+                touchingFret = (int)Math.floor(event.getY() / boxHeight);
+                touchingFret = Math.max(0, Math.min(fretMapping.length - 1, touchingFret));
+
+                touchingFret = fretMapping.length - touchingFret - 1;
+
+                if (touchingFret != lastFret) {
+
+                    lastFret = touchingFret;
+                    Note note = new Note();
+                    note.setBasicNote(touchingFret - rootFret);
+                    note.setScaledNote(fretMapping[touchingFret]);
+                    note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
+                    note.setBeatPosition(mJam.getClosestSubbeat() / (double)mJam.getSubbeats());
+                    mChannel.playLiveNote(note);
+
+                }
+
+            }
+
+        }
+
         if (action == MotionEvent.ACTION_UP) {
-            mChannel.playNote(restNote);
+            mChannel.playLiveNote(restNote);
             touchingString = -1;
             touchingFret = -1;
             lastFret = -1;
+
         }
 
         invalidate();
@@ -218,6 +244,8 @@ public class GuitarView extends View {
 
     public void setScaleInfo() {
 
+        int rootNote;
+
         key = mJam.getKey();
         scale = mJam.getScale();
         frets = 0;
@@ -226,7 +254,12 @@ public class GuitarView extends View {
 
         if (!useScale) {
             key = 0;
+            rootNote = 0;
         }
+        else {
+            rootNote = key + mChannel.getOctave() * 12;
+        }
+        Log.d("MGH root note in guitar view is", Integer.toString(mChannel.getOctave()));
         lowNote = mChannel.getLowNote();
         int highNote = mChannel.getHighNote();
         int[] allFrets = new int[highNote - lowNote + 1];
@@ -246,8 +279,13 @@ public class GuitarView extends View {
             }
 
             if (isInScale) {
+                if (i == rootNote) {
+                    rootFret = frets;
+                }
+
                 noteMapping[i - lowNote] = frets;
                 allFrets[frets++] = i;
+
             }
 
         }
@@ -262,9 +300,10 @@ public class GuitarView extends View {
 
     public void drawNotes(Canvas canvas, ArrayList<Note> list) {
 
-        float middle = getHeight() / 2.0f;
-        float draw_y = 30.0f;
-        draw_boxwidth = images[0][0].getWidth();
+        //float middle = getHeight() / 2.0f;
+        float draw_y;
+        draw_boxwidth = Math.min(images[0][0].getWidth(), getWidth() / (list.size() + 1));
+
         draw_lastDrawnX = draw_boxwidth / 2;
 
         for (int j = 0; j < list.size(); j++) {

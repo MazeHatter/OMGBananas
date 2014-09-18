@@ -74,11 +74,11 @@ public class Jam {
         boolean usingListener = false;
         boolean updatePB = false;
 
-        drumChannel = new HipDrumChannel(mContext, pool, this);
-        basslineChannel = new BassSamplerChannel(mContext, pool);
-        guitarChannel = new ElectricSamplerChannel(mContext, pool);
-        samplerChannel = new SamplerChannel(mContext, pool, this);
-        keyboardChannel = new KeyboardSamplerChannel(mContext, pool);
+        drumChannel = new HipDrumChannel(mContext, this, pool);
+        basslineChannel = new BassSamplerChannel(mContext, this, pool);
+        guitarChannel = new ElectricSamplerChannel(mContext, this, pool);
+        samplerChannel = new SamplerChannel(mContext, this, pool);
+        keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool);
 
 
         soundsToLoad = drumChannel.getSoundCount() +
@@ -161,9 +161,7 @@ public class Jam {
 
     }
 
-    public NoteList makeChannelNotes(Channel channel) {
-
-        NoteList notes = mm.getCurrentMelody();
+    public void makeChannelNotes(Channel channel) {
 
         if (rand.nextInt(5) == 0) {
             mm.makeMotif();
@@ -174,12 +172,11 @@ public class Jam {
             mm.makeMelodyFromMotif(beats);
         }
 
-        channel.setBasicMelody(notes);
-        notes = mm.applyScale(notes, currentChord);
-        channel.setNotes(notes);
+        mm.cloneCurrentMelodyTo(channel.getNotes());
+
+        mm.applyScale(channel, currentChord);
         channel.resetI();
 
-        return notes;
 
     }
 
@@ -221,16 +218,37 @@ public class Jam {
     }
 
     public int getCurrentSubbeat() {
-        int i = playbackThread.i;
+        int i = playbackThread.ibeat;
         if (i == 0) i = beats * subbeats;
         return i - 1;
 
     }
 
+    public int getClosestSubbeat() {
+        if (playbackThread == null)
+            return 0;
+
+        int i = playbackThread.ibeat;
+
+        if (i % 2 > 0)
+            i = (i + 1) % (subbeats * beats);
+
+        /*if (playbackThread.timeSinceLast < subbeatLength / 2) {
+            i = i - 1;
+
+            if (i == -1) i = beats * subbeats - 1;
+        }*/
+
+        return i;
+
+    }
+
+
     class PlaybackThread extends Thread {
 
-        int i;
+        int ibeat;
         int lastI;
+        long timeSinceLast;
 
         public void run() {
 
@@ -240,9 +258,8 @@ public class Jam {
 
             long lastBeatPlayed = 0;
             long now;
-            long timeSinceLast;
 
-            i = 0;
+            ibeat = 0;
 
 
             while (!cancel) {
@@ -256,12 +273,12 @@ public class Jam {
                 }
 
                 lastBeatPlayed = now;
-                playBeatSampler(i);
+                playBeatSampler(ibeat);
 
-                lastI = i++;
+                lastI = ibeat++;
 
-                if (i == beats * subbeats) {
-                    i = 0;
+                if (ibeat == beats * subbeats) {
+                    ibeat = 0;
                     onNewLoop();
 
                     for (View iv : viewsToInvalidateOnNewMeasure) {
@@ -311,9 +328,9 @@ public class Jam {
         }
         int chord = progression[progressionI];
 
-        basslineChannel.setNotes(mm.applyScale(basslineChannel.getBasicMelody(), chord));
-        guitarChannel.setNotes(mm.applyScale(guitarChannel.getBasicMelody(), chord));
-        keyboardChannel.setNotes(mm.applyScale(keyboardChannel.getBasicMelody(), chord));
+        mm.applyScale(basslineChannel, chord);
+        mm.applyScale(guitarChannel, chord);
+        mm.applyScale(keyboardChannel, chord);
 
     }
 
@@ -416,7 +433,7 @@ public class Jam {
 
         Log.d("MGH every rule change", getData());
 
-        playbackThread.i = 0;
+        playbackThread.ibeat = 0;
 
         //drumChannel.enable();
         //basslineChannel.enable();
@@ -547,14 +564,14 @@ public class Jam {
         sb.append(sound);
         sb.append("\", \"scale\": \"");
         sb.append(mm.getScale());
-        sb.append("\", \"rooteNote\": ");
+        sb.append("\", \"rootNote\": ");
         sb.append(mm.getKey());
         sb.append(", \"octave\": ");
         sb.append(channel.getOctave());
         sb.append(", \"notes\" : [");
 
         boolean first = true;
-        for (Note note : channel.getBasicMelody()) {
+        for (Note note : channel.getNotes()) {
 
             if (first)
                 first = false;
@@ -567,7 +584,7 @@ public class Jam {
             sb.append(note.getBeats());
             if (!note.isRest()) {
                 sb.append(", \"note\" :");
-                sb.append(note.getNote());
+                sb.append(note.getBasicNote());
             }
             sb.append("}");
         }
@@ -711,13 +728,14 @@ public class Jam {
 
         int i = channel.getI();
         if (i <  channel.getNotes().size()) {
-            Note note = channel.getNotes().get(i);
-            if (note.getBeatPosition() == beat) {
+            if (channel.getNextBeat() == beat) {
+                Note note = channel.getNotes().get(i);
 
                 channel.playNote(note);
                 channel.finishCurrentNoteAt(System.currentTimeMillis() +
                         (long)(note.getBeats() * 4 * subbeatLength) - 50);
-                channel.bumpI();
+
+                channel.setNextBeat(channel.getNextBeat() +  note.getBeats());
 
             }
         }
@@ -757,4 +775,5 @@ public class Jam {
     public boolean isSoundPoolInitialized() {
         return soundPoolInitialized;
     }
+
 }

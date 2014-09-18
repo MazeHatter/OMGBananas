@@ -8,7 +8,7 @@ public class BluetoothDrumChannel extends DrumChannel {
 
     public BluetoothDrumChannel(Context context, OMGSoundPool pool, Jam jam,
                                 BluetoothConnection connection) {
-        super(context, pool, jam);
+        super(context, jam, pool);
 
         mConnection = connection;
 

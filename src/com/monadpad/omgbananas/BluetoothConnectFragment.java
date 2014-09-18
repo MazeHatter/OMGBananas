@@ -100,7 +100,8 @@ public class BluetoothConnectFragment extends OMGFragment {
                 }
                 else {
                     connection.writeString("LAUNCH_FRETBOARD=" +
-                            mChannel.getLowNote() + "," + mChannel.getHighNote() + ";");
+                            mChannel.getLowNote() + "," + mChannel.getHighNote() + "," +
+                            mChannel.getOctave() + ";");
                 }
 
                 connection.setDataCallback(new BluetoothDataCallback() {
@@ -110,13 +111,19 @@ public class BluetoothConnectFragment extends OMGFragment {
 
                         if (name.equals("CHANNEL_PLAY_NOTE")) {
                             Note note = new Note();
-                            int noteNumber = Integer.parseInt(value);
-                            note.setInstrumentNote(noteNumber);
-                            if (noteNumber == -1) {
+                            String[] noteInfo = value.split(",");
+                            int basicNoteNumber = Integer.parseInt(noteInfo[0]);
+                            int instrumentNoteNumber = Integer.parseInt(noteInfo[1]);
+
+                            note.setInstrumentNote(instrumentNoteNumber);
+                            note.setBasicNote(basicNoteNumber);
+                            if (instrumentNoteNumber == -1) {
                                 note.setRest(true);
                             }
 
-                            mChannel.playNote(note);
+                            Log.d("MGH connection call back play note basic=", Integer.toString(basicNoteNumber));
+
+                            mChannel.playLiveNote(note);
                         }
 
                         if (name.equals("CHANNEL_SET_PATTERN")) {
@@ -146,15 +153,17 @@ public class BluetoothConnectFragment extends OMGFragment {
     private void connectToPairedDevices() {
         final TextView logView = (TextView)mView.findViewById(R.id.bluetooth_log);
 
+        final Activity activity = getActivity();
         mBtf.connectToPairedDevices(new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {
 
-                getActivity().runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        logView.append("\n");
-                        logView.append(status);
+                        //logView.append("\n");
+                        //logView.append(status);
+                        Log.d("MGH bluetooth connect callback", status);
                     }
                 });
 

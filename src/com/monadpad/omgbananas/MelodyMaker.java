@@ -114,7 +114,7 @@ public class MelodyMaker {
 
             // play the last note
             if (rand.nextBoolean()) {
-                currentNote.setNote(adjust + lastNote);
+                currentNote.setBasicNote(adjust + lastNote);
                 continue;
             }
 
@@ -130,7 +130,7 @@ public class MelodyMaker {
                 notesAway = notesAway * -1;
             }
             currentNoteNumber = lastNote + notesAway;
-            currentNote.setNote(adjust + currentNoteNumber);
+            currentNote.setBasicNote(adjust + currentNoteNumber);
             lastNote = currentNoteNumber;
 
         }
@@ -152,31 +152,35 @@ public class MelodyMaker {
         return line;
     }
 
+    public void applyScale(Channel channel, int chord) {
+        applyScale(channel.getNotes(), chord);
 
-    public NoteList applyScale(NoteList notes, int chord) {
+        channel.fitNotesToInstrument();
+    }
+
+    public void applyScale(NoteList notes, int chord) {
 
         int oldNoteNumber;
         int newNoteNumber;
         int octaves;
 
-        NoteList returnLine = new NoteList();
-        Note newNote;
         Note note;
         for (int i = 0; i < notes.size(); i++) {
 
             note = notes.get(i);
 
-            octaves = 0;
-
-            newNote = note.clone();
-            oldNoteNumber = newNote.getNote();
-            newNoteNumber = oldNoteNumber + chord;
-            returnLine.add(newNote);
-
-            if (newNote.isRest()) {
+            if (note.isRest()) {
                 continue;
             }
 
+            octaves = 0;
+
+            oldNoteNumber = note.getBasicNote();
+
+            //Log.d("MGH apply scale basisc note=", Integer.toString(oldNoteNumber));
+
+            newNoteNumber = oldNoteNumber + chord;
+            //Log.d("MGH apply scale chord note=", Integer.toString(newNoteNumber));
 
             while (newNoteNumber >= ascale.length) {
                 octaves++;
@@ -190,11 +194,10 @@ public class MelodyMaker {
 
             newNoteNumber = ascale[newNoteNumber];
 
-            newNote.setNote(key + newNoteNumber + octaves * 12);
-
+            note.setScaledNote(key + newNoteNumber + octaves * 12);
+            //Log.d("MGH apply scale scaled note=", Integer.toString(note.getScaledNote()));
         }
 
-        return returnLine;
     }
 
 
@@ -349,7 +352,7 @@ public class MelodyMaker {
 
             // play the last note
             if (rand.nextBoolean()) {
-                note.setNote(lastNote);
+                note.setBasicNote(lastNote);
                 continue;
             }
 
@@ -365,7 +368,7 @@ public class MelodyMaker {
                 notesAway = notesAway * -1;
             }
 
-            note.setNote(notesAway);
+            note.setBasicNote(notesAway);
 
         }
 
@@ -437,5 +440,14 @@ public class MelodyMaker {
         }
     }
 
+    public void cloneCurrentMelodyTo(NoteList noteList) {
+        noteList.clear();
+
+        Note newNote;
+        for (Note note : currentMelody) {
+            newNote = note.clone();
+            noteList.add(newNote);
+        }
+    }
 
 }

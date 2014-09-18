@@ -120,8 +120,9 @@ public class JamLoader {
 
     private void loadMelody(Channel channel, JSONObject part) throws JSONException {
 
-        NoteList notes = new NoteList();
-        channel.setBasicMelody(notes);
+        NoteList notes = channel.getNotes();
+        notes.clear();
+
         double playedBeats = 0.0d;
 
         JSONArray notesData = part.getJSONArray("notes");
@@ -139,7 +140,7 @@ public class JamLoader {
             newNote.setRest(noteData.getBoolean("rest"));
 
             if (!newNote.isRest()) {
-                newNote.setNote(noteData.getInt("note"));
+                newNote.setBasicNote(noteData.getInt("note"));
 
             }
             notes.add(newNote);

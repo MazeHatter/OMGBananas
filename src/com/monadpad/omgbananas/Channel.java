@@ -1,6 +1,7 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
+import android.util.Log;
 
 public abstract class Channel {
 
@@ -22,7 +23,7 @@ public abstract class Channel {
     protected boolean isAScale = true;
 
     protected NoteList mNoteList = new NoteList();
-    protected NoteList mBasicMelody = new NoteList();
+    //protected NoteList mBasicMelody = new NoteList();
 
     protected int playingI = 0;
 
@@ -39,9 +40,30 @@ public abstract class Channel {
 
     protected int octave = 3;
 
-    public Channel(Context context, OMGSoundPool pool) {
+    protected Note recordingNote;
+    protected int recordingStartedAtSubbeat;
+
+    protected Jam mJam;
+
+    protected double nextBeat = 0.0d;
+
+    public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool;
         this.context = context;
+        mJam = jam;
+    }
+
+    public void playLiveNote(Note note) {
+
+        playNote(note);
+
+        if (!mJam.isPlaying())
+            return;
+
+        if (note.isRest())
+            stopRecording();
+        else
+            startRecordingNote(note);
     }
 
     public void playNote(Note note) {
@@ -53,12 +75,13 @@ public abstract class Channel {
             return;
 
 
-        playingNoteNumber = note.getNote();
+        playingNoteNumber = note.getScaledNote();
 
         note.isPlaying(true);
         lastPlayedNote = note;
 
         if (playingId > -1) {
+            mPool.pause(playingId);
             mPool.stop(playingId);
             playingId = -1;
         }
@@ -102,6 +125,7 @@ public abstract class Channel {
     public void mute() {
 
         if (playingId > -1) {
+            mPool.pause(playingId);
             mPool.stop(playingId);
             playingId = -1;
         }
@@ -142,21 +166,12 @@ public abstract class Channel {
         return mNoteList;
     }
 
-    public void setNotes(NoteList notes) {
-        mNoteList = notes;
 
-        for (Note note : notes) {
-            /*int noteToPlay = note.getNote() - lowNote;
-            while (noteToPlay < 0) {
-                noteToPlay += 12;
-            }
-            while (noteToPlay >= highNote - lowNote) {
-                noteToPlay -= 12;
-            }
-            note.setInstrumentNote(noteToPlay);
-            */
+    public void fitNotesToInstrument() {
 
-            int noteToPlay = note.getNote() + 12 * octave;
+        for (Note note : mNoteList) {
+
+            int noteToPlay = note.getScaledNote() + 12 * octave;
             while (noteToPlay < lowNote) {
                 noteToPlay += 12;
             }
@@ -164,14 +179,18 @@ public abstract class Channel {
                 noteToPlay -= 12;
             }
 
-
             note.setInstrumentNote(noteToPlay - lowNote);
         }
 
         state = STATE_PLAYBACK;
     }
 
-    public void bumpI() {
+    public double getNextBeat() {
+        return nextBeat;
+    }
+
+    public void setNextBeat(double beats) {
+        nextBeat = beats;
         playingI++;
     }
 
@@ -180,7 +199,11 @@ public abstract class Channel {
     }
 
     public void resetI() {
+        nextBeat = 0.0d;
         playingI = 0;
+
+        if (recordingNote == null)
+            state = STATE_PLAYBACK;
     }
 
     public int getState() {
@@ -200,11 +223,41 @@ public abstract class Channel {
         return octave;
     }
 
-    public void setBasicMelody(NoteList noteList) {
-        mBasicMelody = noteList;
+
+    public void startRecordingNote(Note note) {
+
+        if (recordingNote != null) {
+            stopRecording();
+        }
+        recordingStartedAtSubbeat = mJam.getClosestSubbeat();
+        Log.d("MGH start recording subbeat", Integer.toString(recordingStartedAtSubbeat));
+        recordingNote = note;
+
     }
 
-    public NoteList getBasicMelody() {
-        return mBasicMelody;
+    public void stopRecording() {
+
+        if (recordingNote == null)
+            return;
+
+        int nowSubbeat = mJam.getClosestSubbeat();
+        if (nowSubbeat == recordingStartedAtSubbeat) {
+            nowSubbeat++;
+        }
+
+        double subbeats = (double)mJam.getSubbeats();
+        double beats = (nowSubbeat - recordingStartedAtSubbeat) / subbeats;
+        double startBeat = recordingStartedAtSubbeat / subbeats;
+
+        recordingNote.setBeats(beats);
+
+        Log.d("MGH pre overwrite start beat", Double.toString(startBeat));
+        Log.d("MGH pre overwrite beats", Double.toString(beats));
+        mNoteList.overwrite(recordingNote, startBeat);
+        Log.d("MGH POST! overwrite beats", Double.toString(beats));
+
+
+        recordingNote = null;
+        recordingStartedAtSubbeat = -1;
     }
 }
