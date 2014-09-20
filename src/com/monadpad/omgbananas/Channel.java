@@ -1,14 +1,15 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
-import android.util.Log;
+
+import java.util.ArrayList;
 
 public abstract class Channel {
 
     public static int STATE_LIVEPLAY = 0;
     public static int STATE_PLAYBACK = 1;
 
-    protected int state = 0;
+    protected int state = 1;
 
     protected boolean enabled = true;
 
@@ -47,10 +48,22 @@ public abstract class Channel {
 
     protected double nextBeat = 0.0d;
 
+    protected int subbeats;
+    protected int mainbeats;
+    protected int totalsubbeats;
+    private double dsubbeats;
+
+    ArrayList<DebugTouch> debugTouchData = new ArrayList<DebugTouch>();
+
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool;
         this.context = context;
         mJam = jam;
+
+        subbeats = mJam.getSubbeats();
+        mainbeats = mJam.getBeats();
+        totalsubbeats = subbeats * mainbeats;
+        dsubbeats = (double)subbeats;
     }
 
     public void playLiveNote(Note note) {
@@ -60,10 +73,21 @@ public abstract class Channel {
         if (!mJam.isPlaying())
             return;
 
-        if (note.isRest())
+        if (note.isRest()) {
             stopRecording();
-        else
+            state = STATE_PLAYBACK;
+        }
+        else {
             startRecordingNote(note);
+            state = STATE_LIVEPLAY;
+        }
+
+    }
+
+    public void playRecordedNote(Note note) {
+        if (state == STATE_PLAYBACK) {
+            playNote(note);
+        }
     }
 
     public void playNote(Note note) {
@@ -229,8 +253,13 @@ public abstract class Channel {
         if (recordingNote != null) {
             stopRecording();
         }
-        recordingStartedAtSubbeat = mJam.getClosestSubbeat();
-        Log.d("MGH start recording subbeat", Integer.toString(recordingStartedAtSubbeat));
+
+        DebugTouch debugTouch = new DebugTouch();
+        debugTouch.mode = "START";
+        debugTouchData.add(debugTouch);
+
+        recordingStartedAtSubbeat = mJam.getClosestSubbeat(debugTouch);
+
         recordingNote = note;
 
     }
@@ -240,22 +269,25 @@ public abstract class Channel {
         if (recordingNote == null)
             return;
 
-        int nowSubbeat = mJam.getClosestSubbeat();
+        DebugTouch debugTouch = new DebugTouch();
+        debugTouch.mode = "STOP";
+        debugTouchData.add(debugTouch);
+
+        int nowSubbeat = mJam.getClosestSubbeat(debugTouch);
+
         if (nowSubbeat == recordingStartedAtSubbeat) {
             nowSubbeat++;
         }
+        else if (nowSubbeat < recordingStartedAtSubbeat) {
+            nowSubbeat += totalsubbeats;
+        }
 
-        double subbeats = (double)mJam.getSubbeats();
-        double beats = (nowSubbeat - recordingStartedAtSubbeat) / subbeats;
-        double startBeat = recordingStartedAtSubbeat / subbeats;
+        double beats = (nowSubbeat - recordingStartedAtSubbeat) / dsubbeats;
+        double startBeat = recordingStartedAtSubbeat / dsubbeats;
 
         recordingNote.setBeats(beats);
 
-        Log.d("MGH pre overwrite start beat", Double.toString(startBeat));
-        Log.d("MGH pre overwrite beats", Double.toString(beats));
         mNoteList.overwrite(recordingNote, startBeat);
-        Log.d("MGH POST! overwrite beats", Double.toString(beats));
-
 
         recordingNote = null;
         recordingStartedAtSubbeat = -1;

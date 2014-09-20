@@ -225,13 +225,13 @@ public class MelodyView extends View {
             draw_lastDrawnX = (width - spaceUsed) / 2;
         }
 
-
+        double beatPostion = 0.0d;
 
         for (int j = startI; j <= finishI; j++) {
 
             draw_note = list.get(j);
 
-            if (draw_note.getBeatPosition() % 4 == 0)
+            if (beatPostion % 4 == 0)
                 canvas.drawLine(draw_lastDrawnX, draw_y,
                         draw_lastDrawnX, draw_y + boxHeight, paint);
 
@@ -279,6 +279,8 @@ public class MelodyView extends View {
                         draw_x, draw_y + 50,
                         paint);
             }
+
+            beatPostion += draw_note.getBeats();
 
         }
 

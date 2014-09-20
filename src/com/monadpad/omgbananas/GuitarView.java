@@ -22,12 +22,15 @@ public class GuitarView extends View {
 
     private Paint paint;
     private Paint paintOff;
+    private Paint paintRed;
+    private Paint paintGreen;
 
     private int width = -1;
     private int height = -1;
 
     private int boxWidth;
     private int boxHeight;
+    private int boxHeightHalf;
 
     private Jam mJam;
     private Channel mChannel;
@@ -77,6 +80,7 @@ public class GuitarView extends View {
 
     private int rootFret = 0;
 
+
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -92,10 +96,17 @@ public class GuitarView extends View {
         paintBeat.setARGB(255, 255, 0, 0);
 
         paintOff = new Paint();
-        paintOff.setARGB(255, 128, 128, 128);
-        //paintOff.setShadowLayer(10, 0, 0, 0xFFFFFFFF);
-        paintOff.setStyle(Paint.Style.STROKE);
+        paintOff.setARGB(128, 128, 128, 128);
+        paintOff.setStyle(Paint.Style.FILL);
         paintOff.setTextSize(paintText.getTextSize());
+
+        paintRed = new Paint();
+        paintRed.setARGB(128, 255, 0, 0);
+        paintRed.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        paintGreen = new Paint();
+        paintGreen.setARGB(128, 0, 255, 0);
+        paintGreen.setStyle(Paint.Style.FILL_AND_STROKE);
 
         topPanelPaint = new Paint();
         topPanelPaint.setARGB(255, 192, 192, 255);
@@ -137,15 +148,20 @@ public class GuitarView extends View {
             width = getWidth();
             height = getHeight();
             boxHeight = height / frets;
+            boxHeightHalf = boxHeight / 2;
         //}
 
         int playingNote = mChannel.getPlayingNoteNumber();
         int noteNumber;
 
         for (int fret = 1; fret <= frets; fret++) {
-            canvas.drawLine(0, height - fret * boxHeight, width, height - fret * boxHeight, paint);
+
             noteNumber = fretMapping[fret - 1];
-            canvas.drawText(keyCaptions[noteNumber % 12], 0, height - (fret - 1) * boxHeight, paint);
+
+            if (noteNumber % 12 == key) {
+                canvas.drawRect(width / 4, height - fret * boxHeight,
+                        width / 4 * 3, height - (fret - 1) * boxHeight, paintOff);
+            }
 
             if (noteNumber == playingNote) {
                 canvas.drawRect(0, height - fret * boxHeight,
@@ -153,8 +169,17 @@ public class GuitarView extends View {
                         topPanelPaint);
 
             }
+
+            canvas.drawLine(0, height - fret * boxHeight, width,
+                    height - fret * boxHeight, paint);
+
+            canvas.drawText(keyCaptions[noteNumber % 12], 0,
+                    height - (fret - 1) * boxHeight - boxHeightHalf, paint);
+
         }
 
+        canvas.drawLine(0, height - 1, width,
+                height - 1, paint);
 
         if (touchingFret > -1 ) {
             canvas.drawRect(0, height - (touchingFret + 1) * boxHeight,
@@ -164,6 +189,26 @@ public class GuitarView extends View {
         }
 
         drawNotes(canvas, mChannel.getNotes());
+
+        if (mChannel.debugTouchData.size() > 0) {
+            int subbeats = mJam.getTotalSubbeats();
+            float beatWidth = getWidth() / (float)subbeats;
+            for (int isubbeat = 0; isubbeat <= subbeats; isubbeat++) {
+                canvas.drawLine(isubbeat * beatWidth, 0, isubbeat * beatWidth, height, paint);
+            }
+
+            DebugTouch debugTouch;
+            for (int idebug = 0; idebug < mChannel.debugTouchData.size(); idebug++) {
+                debugTouch = mChannel.debugTouchData.get(idebug);
+
+                canvas.drawCircle(width * (float)debugTouch.dbeat / 8.0f, height/2, 5,
+                        debugTouch.mode.equals("START") ? paintGreen : paintRed);
+
+                canvas.drawCircle(width * (float)debugTouch.isubbeatgiven / 32, height/2 - 20, 5,
+                        debugTouch.mode.equals("START") ? paintGreen : paintRed);
+
+            }
+        }
     }
 
 
@@ -212,7 +257,6 @@ public class GuitarView extends View {
                     note.setBasicNote(touchingFret - rootFret);
                     note.setScaledNote(fretMapping[touchingFret]);
                     note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
-                    note.setBeatPosition(mJam.getClosestSubbeat() / (double)mJam.getSubbeats());
                     mChannel.playLiveNote(note);
 
                 }
@@ -243,6 +287,8 @@ public class GuitarView extends View {
     }
 
     public void setScaleInfo() {
+
+        mChannel.debugTouchData.clear();
 
         int rootNote;
 

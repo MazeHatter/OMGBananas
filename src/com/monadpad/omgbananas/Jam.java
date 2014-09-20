@@ -16,6 +16,7 @@ public class Jam {
 
     private int subbeats = 4;
     private int beats = 8;
+    private int totalsubbeats = subbeats * beats;
     private int subbeatLength = 125; //70 + rand.nextInt(125); // 125;
 
     private DrumChannel drumChannel;
@@ -224,20 +225,31 @@ public class Jam {
 
     }
 
-    public int getClosestSubbeat() {
+    public int getClosestSubbeat(DebugTouch debugTouch) {
         if (playbackThread == null)
             return 0;
 
-        int i = playbackThread.ibeat;
+        int i = playbackThread.lastI;
 
-        if (i % 2 > 0)
-            i = (i + 1) % (subbeats * beats);
+        debugTouch.iclosestsubbeat = i;
+        debugTouch.dbeat = (i + playbackThread.timeSinceLast / (double)subbeatLength) / subbeats;
 
-        /*if (playbackThread.timeSinceLast < subbeatLength / 2) {
-            i = i - 1;
+        // don't use 16th notes
+        //if (i % 2 > 0)
+        //    i = (i - 1) % (totalsubbeats);
 
-            if (i == -1) i = beats * subbeats - 1;
-        }*/
+        //if (i < 0) i = totalsubbeats - 1;
+
+        if (playbackThread.timeSinceLast > subbeatLength / 2) {
+            i = i + 1;
+            if (i == totalsubbeats)
+                i = 0;
+
+            //if (i == -1) i = beats * subbeats - 1;
+        }
+
+        debugTouch.isubbeatgiven = i;
+
 
         return i;
 
@@ -731,7 +743,7 @@ public class Jam {
             if (channel.getNextBeat() == beat) {
                 Note note = channel.getNotes().get(i);
 
-                channel.playNote(note);
+                channel.playRecordedNote(note);
                 channel.finishCurrentNoteAt(System.currentTimeMillis() +
                         (long)(note.getBeats() * 4 * subbeatLength) - 50);
 
@@ -762,6 +774,10 @@ public class Jam {
 
     public int getSubbeats() {
         return subbeats;
+    }
+
+    public int getTotalSubbeats() {
+        return totalsubbeats;
     }
 
     public Random getRand() {

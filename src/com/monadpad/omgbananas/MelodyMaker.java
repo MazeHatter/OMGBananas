@@ -96,7 +96,7 @@ public class MelodyMaker {
         while (playedBeats < totalBeats) {
 
             currentNote = new Note();
-            currentNote.setBeatPosition(playedBeats);
+            //currentNote.setBeatPosition(playedBeats);
 
             line.add(currentNote);
 
@@ -141,7 +141,7 @@ public class MelodyMaker {
             NoteList line2 = new NoteList();
             for (int ii = line.size(); ii > 0; ii--) {
                 currentNote = line.get(ii - 1);
-                currentNote.setBeatPosition(playedBeats);
+                //currentNote.setBeatPosition(playedBeats);
                 playedBeats += currentNote.getBeats();
                 line2.add(currentNote);
             }
@@ -250,12 +250,10 @@ public class MelodyMaker {
                     Note note = new Note();
                     note.setRest(true);
                     note.setBeats(2.0d);
-                    note.setBeatPosition(playedBeats);
                     ret.add(note);
                 }
                 else {
                     Note note = motif.get(0).clone();
-                    note.setBeatPosition(playedBeats);
                     ret.add(note);
                     double beatsFromFirstNote = note.getBeats();
 
@@ -263,7 +261,6 @@ public class MelodyMaker {
                         note = new Note();
                         note.setRest(true);
                         note.setBeats(2.0d - beatsFromFirstNote);
-                        note.setBeatPosition(playedBeats + beatsFromFirstNote);
                         ret.add(note);
                     }
                 }
@@ -274,7 +271,6 @@ public class MelodyMaker {
             else {
                 for (Note note : motif) {
                     note = note.clone();
-                    note.setBeatPosition(playedBeats);
                     ret.add(note);
                     playedBeats += note.getBeats();
                 }

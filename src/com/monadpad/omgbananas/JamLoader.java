@@ -135,7 +135,6 @@ public class JamLoader {
 
             newNote = new Note();
             newNote.setBeats(noteData.getDouble("beats"));
-            newNote.setBeatPosition(playedBeats);
             playedBeats += newNote.getBeats();
             newNote.setRest(noteData.getBoolean("rest"));
 

@@ -472,6 +472,16 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        Button mixerButton = (Button)mView.findViewById(R.id.mixer_button);
+        mixerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MixerFragment fragment = new MixerFragment();
+                //fragment.setJam(mJam, MainFragment.this);
+                showFragmentRight(fragment);
+
+            }
+        });
 
         mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
         mainLibenizHead.setOnClickListener(new View.OnClickListener() {

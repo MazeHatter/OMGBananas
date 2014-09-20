@@ -7,7 +7,6 @@ package com.monadpad.omgbananas;
  */
 public class Note {
 
-    private double mBeatPosition;
     private double mBeats;
 //    private int noteNumber;
 
@@ -68,19 +67,10 @@ public class Note {
         ret.mBeats = mBeats;
         ret.isrest = isrest;
         ret.basicNote = basicNote;
-        ret.mBeatPosition = mBeatPosition;
 
         return ret;
     }
 
-
-    public void setBeatPosition(double pos) {
-        mBeatPosition = pos;
-    }
-
-    public double getBeatPosition() {
-        return mBeatPosition;
-    }
 
     public boolean isPlaying() {
         return isplaying;

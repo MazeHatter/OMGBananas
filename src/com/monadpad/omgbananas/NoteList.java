@@ -39,18 +39,28 @@ public class NoteList extends ArrayList<Note> {
 
             // this is right where the note is supposed to start
             if (beatsUsed == beat) {
-                add(i, note);
-                j = i + 1;
-                while (beatsDisplaced > 0 && j < size()) {
-                    existingNote = get(j);
-                    if (existingNote.getBeats() <= beatsDisplaced) {
-                        remove(j);
-                    }
-                    else {
-                        existingNote.setBeats(existingNote.getBeats() - beatsDisplaced);
-                    }
-                    beatsDisplaced -= existingNote.getBeats();
 
+                // if this eight note is over writing another, chop it in two
+                if (note.getBeats() == 0.5d && existingNote.getBeats() == 0.5d) {
+                    existingNote.setBeats(0.25d);
+                    note.setBeats(0.25d);
+                    add(i + 1, note);
+                }
+                else {
+                    // add it and cut out what was in its place
+                    add(i, note);
+                    j = i + 1;
+                    while (beatsDisplaced > 0 && j < size()) {
+                        existingNote = get(j);
+                        if (existingNote.getBeats() <= beatsDisplaced) {
+                            remove(j);
+                        }
+                        else {
+                            existingNote.setBeats(existingNote.getBeats() - beatsDisplaced);
+                        }
+                        beatsDisplaced -= existingNote.getBeats();
+
+                    }
                 }
 
                 break;
