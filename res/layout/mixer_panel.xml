@@ -12,6 +12,7 @@
 
 
     <com.monadpad.omgbananas.MixerView
+        android:id="@+id/mixer_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>
 

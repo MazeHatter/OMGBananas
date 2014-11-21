@@ -19,8 +19,6 @@ public abstract class DrumChannel extends Channel {
 
     protected boolean[][] pattern;
 
-    protected float volume = 1.0f;
-
     protected int beats;
     protected int subbeats;
 
@@ -36,6 +34,8 @@ public abstract class DrumChannel extends Channel {
         isAScale = false;
         highNote = 7;
         lowNote = 0;
+
+        volume = 1.0f;
 
         mCaptions = new String[] {
 
@@ -318,7 +318,7 @@ public abstract class DrumChannel extends Channel {
         sb.append("{\"type\" : \"DRUMBEAT\", \"kit\": \"");
         sb.append(kitName);
 
-        sb.append("\", \"data\": [");
+        sb.append("\", \"tracks\": [");
 
         for (int p = 0; p < pattern.length; p++) {
             sb.append("{\"name\": \"");

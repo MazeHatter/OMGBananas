@@ -1,7 +1,5 @@
 package com.monadpad.omgbananas;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 public class NoteList extends ArrayList<Note> {
@@ -41,12 +39,12 @@ public class NoteList extends ArrayList<Note> {
             if (beatsUsed == beat) {
 
                 // if this eight note is over writing another, chop it in two
-                if (note.getBeats() == 0.5d && existingNote.getBeats() == 0.5d) {
+                /*if (!existingNote.isRest() && note.getBeats() == 0.5d && existingNote.getBeats() == 0.5d) {
                     existingNote.setBeats(0.25d);
                     note.setBeats(0.25d);
                     add(i + 1, note);
                 }
-                else {
+                else {*/
                     // add it and cut out what was in its place
                     add(i, note);
                     j = i + 1;
@@ -61,26 +59,26 @@ public class NoteList extends ArrayList<Note> {
                         beatsDisplaced -= existingNote.getBeats();
 
                     }
-                }
+                //}
 
                 break;
             }
 
             // the new note starts after the last note
             if (i == size() - 1) {
-                Log.d("MGH overwrite 1", Double.toString(beat - beatsUsed));
+                //Log.d("MGH overwrite 1", Double.toString(beat - beatsUsed));
                 existingNote.setBeats(beat - beatsUsed);
                 add(note);
 
                 beatsUsed += existingNote.getBeats();
                 beatsUsed += note.getBeats();
 
-                Log.d("MGH overwrite 2", Double.toString(beats - beatsUsed));
+                //Log.d("MGH overwrite 2", Double.toString(beats - beatsUsed));
                 if (beatsUsed < beats) {
                     Note endRest = new Note();
                     endRest.setRest(true);
                     endRest.setBeats(beats - beatsUsed);
-                    Log.d("MGH overwrite 3", Double.toString(beatsUsed));
+                    //Log.d("MGH overwrite 3", Double.toString(beatsUsed));
                     add(endRest);
                 }
 

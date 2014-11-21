@@ -340,10 +340,15 @@ public class Jam {
         }
         int chord = progression[progressionI];
 
+        updateChord(chord);
+
+    }
+
+    private void updateChord(int chord) {
+
         mm.applyScale(basslineChannel, chord);
         mm.applyScale(guitarChannel, chord);
         mm.applyScale(keyboardChannel, chord);
-
     }
 
     public void finish() {
@@ -763,9 +768,14 @@ public class Jam {
     }
 
     public void setChordProgression(int[] chordProgression) {
+        // ifeel like this should be negative one?
         progressionI = 0;
         progression = chordProgression;
         currentChord = progression[0];
+
+        if (chordProgression.length == 1) {
+            updateChord(currentChord);
+        }
     }
 
     public int getBeats() {

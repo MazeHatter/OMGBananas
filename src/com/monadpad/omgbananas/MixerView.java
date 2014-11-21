@@ -95,10 +95,10 @@ public class MixerView extends View {
 
         float height2 = height / 2;
 
-        canvas.drawLine(10, height2, width2 - 10,
+        canvas.drawLine(2, height2, width2 - 2,
                 height2, paint);
 
-        canvas.drawLine(10 + width2, height2, width - 10,
+        canvas.drawLine(2 + width2, height2, width - 2,
                 height2, paint);
 
         canvas.drawText("L", width2 + 15,
@@ -116,16 +116,11 @@ public class MixerView extends View {
                         width2 * volume + 5, height / 3 * 2,
                 topPanelPaint);
 
-        canvas.drawRect(width2 * pan + width / 4 * 3 - 5, height / 4,
-                        width2 * pan + width / 4 * 3 + 5, height / 4 * 3,
+        canvas.drawRect(width2 * pan / 2 + width / 4 * 3 - 5, height / 4,
+                        width2 * pan / 2 + width / 4 * 3 + 5, height / 4 * 3,
                 topPanelPaint);
 
-
-
     }
-
-
-
 
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
@@ -157,20 +152,24 @@ public class MixerView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(Jam jam, Channel channel, String name) {
         mJam = jam;
         mChannel = channel;
-;
+
+        volume = channel.volume;
+
+        setChannelName(name);
 
     }
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_VOLUME) {
-            volume = Math.min(1, x / (width/2));
+            volume = Math.max(0, Math.min(1, x / (width/2)));
+            mChannel.volume = volume;
             invalidate();
         }
         else if (touchingArea == TOUCHING_AREA_PAN) {
-            pan = ((x - width2) / width2 - 0.5f) * 2;
+            pan = Math.max(-1.0f, Math.min(1.0f, ((x - width2) / width2 - 0.5f) * 2));
             invalidate();
         }
     }

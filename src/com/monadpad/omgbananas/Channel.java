@@ -275,11 +275,11 @@ public abstract class Channel {
 
         int nowSubbeat = mJam.getClosestSubbeat(debugTouch);
 
-        if (nowSubbeat == recordingStartedAtSubbeat) {
-            nowSubbeat++;
-        }
-        else if (nowSubbeat < recordingStartedAtSubbeat) {
+        if (nowSubbeat < recordingStartedAtSubbeat) {
             nowSubbeat += totalsubbeats;
+        }
+        if (nowSubbeat - recordingStartedAtSubbeat < 2) {
+            nowSubbeat = recordingStartedAtSubbeat + 2;
         }
 
         double beats = (nowSubbeat - recordingStartedAtSubbeat) / dsubbeats;

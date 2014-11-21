@@ -57,7 +57,7 @@ public class ChordsFragment extends OMGFragment {
 
                 mainFragment.updateUI();
 
-                getActivity().getSupportFragmentManager().popBackStack();
+                //getActivity().getSupportFragmentManager().popBackStack();
             }
         });
 

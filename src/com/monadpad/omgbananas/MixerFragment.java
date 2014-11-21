@@ -44,14 +44,17 @@ public class MixerFragment extends OMGFragment {
 
         drumControls = mView.findViewById(R.id.drums);
 
-        //((Button)drumControls.findViewById(R.id.track_button)).setText("Drums");
+        ((MixerView)drumControls.findViewById(R.id.mixer_view)).
+                setJam(mJam, mJam.getDrumChannel(), "Drums");
 
     }
 
     public void setupBassPanel() {
 
         bassControls = mView.findViewById(R.id.bass_controls);
-        //((Button)bassControls.findViewById(R.id.track_button)).setText("Bass");
+
+        ((MixerView)bassControls.findViewById(R.id.mixer_view)).
+                setJam(mJam, mJam.getBassChannel(), "Bass");
 
 
     }
@@ -61,20 +64,24 @@ public class MixerFragment extends OMGFragment {
     public void setupGuitarPanel() {
 
         guitarControls = mView.findViewById(R.id.guitar);
-        //((Button)guitarControls.findViewById(R.id.track_button)).setText("Guitar");
+        ((MixerView)guitarControls.findViewById(R.id.mixer_view)).
+                setJam(mJam, mJam.getGuitarChannel(), "Guitar");
 
     }
 
     public void setupSamplerPanel() {
 
         samplerControls = mView.findViewById(R.id.sampler);
-        //((Button)samplerControls.findViewById(R.id.track_button)).setText("Sampler");
+        ((MixerView)samplerControls.findViewById(R.id.mixer_view)).
+                setJam(mJam, mJam.getSamplerChannel(), "Sampler");
 
     }
 
     public void setupKeyboardPanel() {
         keyboardControls = mView.findViewById(R.id.rhythm_controls);
-        //((Button)(keyboardControls.findViewById(R.id.track_button))).setText("Keyboard");
+
+        ((MixerView)keyboardControls.findViewById(R.id.mixer_view)).
+                setJam(mJam, mJam.getSynthChannel(), "Keyboard");
 
 
     }

@@ -127,11 +127,15 @@ public class ChordsView extends View {
         int numberOfChords = chords.length;
         int startAt = (width - numberOfChords * boxWidth) / 2;
         int at;
-
+        int scalei;
         for (int i = 0; i < chords.length; i++) {
 
             at = startAt + boxWidth * i;
-            drawChord(canvas, scale[chords[i] % scale.length], at);
+
+            scalei = chords[i] % scale.length;
+            if (scalei < 0)
+                scalei += scale.length;
+            drawChord(canvas, scale[scalei], at);
 
             if (chordInProgression == i) {
                 canvas.drawRect(at, marginY,
