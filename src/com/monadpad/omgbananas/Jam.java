@@ -27,6 +27,8 @@ public class Jam {
     private Channel guitarChannel;
     private SamplerChannel samplerChannel;
 
+    private DialpadChannel dialpadChannel;
+
     private OMGSoundPool pool;
 
     private Context mContext;
@@ -81,6 +83,7 @@ public class Jam {
         samplerChannel = new SamplerChannel(mContext, this, pool);
         keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool);
 
+        dialpadChannel = new DialpadChannel(mContext, this, pool, new DialpadChannelSettings());
 
         soundsToLoad = drumChannel.getSoundCount() +
                 basslineChannel.getSoundCount() +
@@ -148,6 +151,8 @@ public class Jam {
             basslineChannel.resetI();
             guitarChannel.resetI();
             keyboardChannel.resetI();
+            dialpadChannel.resetI();
+
         }
 
         drumChannel.playBeat(subbeat);
@@ -159,6 +164,8 @@ public class Jam {
         playChannelBeat(guitarChannel, beat);
 
         playChannelBeat(keyboardChannel, beat);
+
+        playChannelBeat(dialpadChannel, beat);
 
     }
 
@@ -216,6 +223,10 @@ public class Jam {
     public boolean toggleMuteSampler() {
         samplerChannel.toggleEnabled();
         return samplerChannel.enabled;
+    }
+    public boolean  toggleMuteDsp() {
+        dialpadChannel.toggleEnabled();
+        return dialpadChannel.enabled;
     }
 
     public int getCurrentSubbeat() {
@@ -349,6 +360,7 @@ public class Jam {
         mm.applyScale(basslineChannel, chord);
         mm.applyScale(guitarChannel, chord);
         mm.applyScale(keyboardChannel, chord);
+        mm.applyScale(dialpadChannel, chord);
     }
 
     public void finish() {
@@ -357,6 +369,9 @@ public class Jam {
         basslineChannel.mute();
         guitarChannel.mute();
         samplerChannel.mute();
+
+        dialpadChannel.mute();
+
         //mPool.release();
         //mPool = null;
     }
@@ -447,6 +462,8 @@ public class Jam {
 
         makeChannelNotes(guitarChannel);
         makeChannelNotes(keyboardChannel);
+
+        makeChannelNotes(dialpadChannel);
 
         Log.d("MGH every rule change", getData());
 
@@ -564,6 +581,10 @@ public class Jam {
 
         sb.append(", ");
 
+        getChannelData(dialpadChannel, "MELODY", "DIALPAD_SINE_DELAY", sb);
+
+        sb.append(", ");
+
         getChordsData(sb);
 
         sb.append("]}");
@@ -585,6 +606,10 @@ public class Jam {
         sb.append(mm.getKey());
         sb.append(", \"octave\": ");
         sb.append(channel.getOctave());
+        sb.append(", \"volume\": ");
+        sb.append(channel.getVolume());
+        if (!channel.enabled)
+            sb.append(", \"mute\": true");
         sb.append(", \"notes\" : [");
 
         boolean first = true;
@@ -661,6 +686,10 @@ public class Jam {
 
     public void monkeyWithGuitar() {
         makeChannelNotes(guitarChannel);
+    }
+
+    public void monkeyWithDsp() {
+        makeChannelNotes(dialpadChannel);
     }
 
     public void monkeyWithChords() {
@@ -802,4 +831,8 @@ public class Jam {
         return soundPoolInitialized;
     }
 
+
+    public Channel getDialpadChannel() {
+        return dialpadChannel;
+    }
 }

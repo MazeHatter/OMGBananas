@@ -23,10 +23,8 @@ public class JamLoader {
 
             JSONArray parts;
             if (jsonData.has("parts")) {
-                Log.d("MGH loading parts", data);
                 parts = jsonData.getJSONArray("parts");
             } else {
-                Log.d("MGH loading data", data);
                 parts = jsonData.getJSONArray("data");
             }
 
@@ -60,7 +58,9 @@ public class JamLoader {
                         loadMelody(mJam.getSynthChannel(), part);
                     } else if ("PRESET_GUITAR1".equals(part.getString("sound"))) {
                         loadMelody(mJam.getGuitarChannel(), part);
-
+                    }
+                    else if ("DIALPAD_SINE_DELAY".equals(part.getString(("sound")))) {
+                        loadMelody(mJam.getDialpadChannel(), part);
                     }
                 } else if ("BASSLINE".equals(type)) {
                     loadMelody(mJam.getBassChannel(), part);
@@ -94,24 +94,38 @@ public class JamLoader {
         //todo    drumset = jsonData.getInt("kit");
 
 
-        JSONArray channels = part.getJSONArray("data");
-        JSONObject channel;
-        JSONArray channelData;
+        JSONArray tracks;
+        if (part.has("tracks")) {
+            tracks = part.getJSONArray("tracks");
+        }
+        else {
+            //backwards compat
+            tracks = part.getJSONArray("data");
+        }
+        JSONObject track;
+        JSONArray trackData;
 
         boolean[][] pattern = jamChannel.pattern;
+
+        if (part.has("volume")) {
+            jamChannel.volume = (float)part.getDouble("volume");
+        }
+        if (part.has("mute") && part.getBoolean("mute"))
+            jamChannel.disable();
+        else
+            jamChannel.enable();
 
         //underrun overrun?
         //match the right channels?
         // this assumes things are in the right order
 
-        for (int i = 0; i < channels.length(); i++) {
-            channel = channels.getJSONObject(i);
-            channelData = channel.getJSONArray("data");
+        for (int i = 0; i < tracks.length(); i++) {
+            track = tracks.getJSONObject(i);
 
-            Log.d("MGH loadding drum channel", Integer.toString(i));
+            trackData = track.getJSONArray("data");
 
-            for (int j = 0; j < channelData.length(); j++) {
-                pattern[i][j] = channelData.getInt(j) == 1;
+            for (int j = 0; j < trackData.length(); j++) {
+                pattern[i][j] = trackData.getInt(j) == 1;
             }
 
         }
@@ -123,7 +137,13 @@ public class JamLoader {
         NoteList notes = channel.getNotes();
         notes.clear();
 
-        double playedBeats = 0.0d;
+        if (part.has("volume")) {
+            channel.volume = (float)part.getDouble("volume");
+        }
+        if (part.has("mute") && part.getBoolean("mute"))
+            channel.disable();
+        else
+            channel.enable();
 
         JSONArray notesData = part.getJSONArray("notes");
 
@@ -135,7 +155,7 @@ public class JamLoader {
 
             newNote = new Note();
             newNote.setBeats(noteData.getDouble("beats"));
-            playedBeats += newNote.getBeats();
+
             newNote.setRest(noteData.getBoolean("rest"));
 
             if (!newNote.isRest()) {

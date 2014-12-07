@@ -115,6 +115,9 @@
                  android:id="@+id/guitar"
                 />
 
+        <include layout="@layout/main_panel"
+            android:id="@+id/dsp_controls"
+                />
 
         <include layout="@layout/main_panel"
                  android:id="@+id/rhythm_controls"

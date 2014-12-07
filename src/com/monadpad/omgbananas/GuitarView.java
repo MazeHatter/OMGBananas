@@ -80,6 +80,9 @@ public class GuitarView extends View {
 
     private int rootFret = 0;
 
+    private float draw_leftOffset = 20;
+    private float draw_debugBeatWidth;
+    private float draw_beatWidth;
 
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -149,6 +152,12 @@ public class GuitarView extends View {
             height = getHeight();
             boxHeight = height / frets;
             boxHeightHalf = boxHeight / 2;
+
+        int subbeats = mJam.getTotalSubbeats();
+
+        draw_debugBeatWidth = getWidth() - draw_leftOffset;
+        draw_beatWidth = draw_debugBeatWidth / (float)subbeats;
+
         //}
 
         int playingNote = mChannel.getPlayingNoteNumber();
@@ -191,20 +200,21 @@ public class GuitarView extends View {
         drawNotes(canvas, mChannel.getNotes());
 
         if (mChannel.debugTouchData.size() > 0) {
-            int subbeats = mJam.getTotalSubbeats();
-            float beatWidth = getWidth() / (float)subbeats;
             for (int isubbeat = 0; isubbeat <= subbeats; isubbeat++) {
-                canvas.drawLine(isubbeat * beatWidth, 0, isubbeat * beatWidth, height, paint);
+                canvas.drawLine(draw_leftOffset + isubbeat * draw_beatWidth, height - 50,
+                        draw_leftOffset + isubbeat * draw_beatWidth, height, paint);
             }
 
             DebugTouch debugTouch;
             for (int idebug = 0; idebug < mChannel.debugTouchData.size(); idebug++) {
                 debugTouch = mChannel.debugTouchData.get(idebug);
 
-                canvas.drawCircle(width * (float)debugTouch.dbeat / 8.0f, height/2, 5,
+                canvas.drawCircle(draw_leftOffset + draw_debugBeatWidth *
+                                (float)debugTouch.dbeat / 8.0f, height - 40, 5,
                         debugTouch.mode.equals("START") ? paintGreen : paintRed);
 
-                canvas.drawCircle(width * (float)debugTouch.isubbeatgiven / 32, height/2 - 20, 5,
+                canvas.drawCircle(draw_leftOffset + draw_debugBeatWidth *
+                                (float)debugTouch.isubbeatgiven / 32, height - 20, 5,
                         debugTouch.mode.equals("START") ? paintGreen : paintRed);
 
             }
@@ -352,6 +362,8 @@ public class GuitarView extends View {
 
         draw_lastDrawnX = draw_boxwidth / 2;
 
+        double beatsUsed = 0.0d;
+
         for (int j = 0; j < list.size(); j++) {
 
             draw_note = list.get(j);
@@ -394,6 +406,8 @@ public class GuitarView extends View {
                 draw_y = (frets - 1 - noteMapping[draw_note.getInstrumentNote()]) * boxHeight;
             }
 
+            draw_x = draw_beatWidth * (float)beatsUsed * 4.0f;
+
             if (draw_note.isPlaying()) {
                 canvas.drawRect(draw_x, draw_y,
                         draw_lastDrawnX,
@@ -410,6 +424,7 @@ public class GuitarView extends View {
                         paint);
             }
 
+            beatsUsed += draw_note.getBeats();
         }
 
     }

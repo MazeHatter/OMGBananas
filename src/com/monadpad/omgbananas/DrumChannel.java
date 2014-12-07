@@ -318,7 +318,12 @@ public abstract class DrumChannel extends Channel {
         sb.append("{\"type\" : \"DRUMBEAT\", \"kit\": \"");
         sb.append(kitName);
 
-        sb.append("\", \"tracks\": [");
+        sb.append("\", \"volume\": ");
+        sb.append(volume);
+        if (!enabled)
+            sb.append(", \"mute\": true");
+
+        sb.append(", \"tracks\": [");
 
         for (int p = 0; p < pattern.length; p++) {
             sb.append("{\"name\": \"");

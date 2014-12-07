@@ -15,7 +15,7 @@ public abstract class Channel {
 
     private long finishAt;
 
-    private Note lastPlayedNote;
+    protected Note lastPlayedNote;
     protected int playingNoteNumber = -1;
 
     protected int highNote = 0;
@@ -291,5 +291,9 @@ public abstract class Channel {
 
         recordingNote = null;
         recordingStartedAtSubbeat = -1;
+    }
+
+    public float getVolume() {
+        return volume;
     }
 }
