@@ -10,8 +10,8 @@ import android.content.Context;
 public class BassSamplerChannel extends Channel {
 
 
-    public BassSamplerChannel(Context context, Jam jam, OMGSoundPool pool) {
-        super(context, jam, pool);
+    public BassSamplerChannel(Context context, Jam jam, OMGSoundPool pool, String type, String sound) {
+        super(context, jam, pool, type, sound);
 
         highNote = 48;
         lowNote = 28;

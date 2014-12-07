@@ -160,9 +160,6 @@ public class MelodyMaker {
 
     public void applyScale(NoteList notes, int chord) {
 
-        int oldNoteNumber;
-        int newNoteNumber;
-        int octaves;
 
         Note note;
         for (int i = 0; i < notes.size(); i++) {
@@ -173,34 +170,35 @@ public class MelodyMaker {
                 continue;
             }
 
-            octaves = 0;
+            note.setScaledNote(scaleNote(note.getBasicNote(), chord));
 
-            oldNoteNumber = note.getBasicNote();
-
-            //Log.d("MGH apply scale basisc note=", Integer.toString(oldNoteNumber));
-
-            newNoteNumber = oldNoteNumber + chord;
-            //Log.d("MGH apply scale chord note=", Integer.toString(newNoteNumber));
-
-            while (newNoteNumber >= ascale.length) {
-                octaves++;
-                newNoteNumber = newNoteNumber - ascale.length;
-            }
-
-            while (newNoteNumber < 0) {
-                octaves--;
-                newNoteNumber = newNoteNumber + ascale.length;
-            }
-
-            newNoteNumber = ascale[newNoteNumber];
-
-            note.setScaledNote(key + newNoteNumber + octaves * 12);
-            //Log.d("MGH apply scale scaled note=", Integer.toString(note.getScaledNote()));
         }
 
     }
 
+    public int scaleNote(int oldNoteNumber, int chord) {
+        int newNoteNumber;
+        int octaves;
 
+        octaves = 0;
+
+        newNoteNumber = oldNoteNumber + chord;
+
+        while (newNoteNumber >= ascale.length) {
+            octaves++;
+            newNoteNumber = newNoteNumber - ascale.length;
+        }
+
+        while (newNoteNumber < 0) {
+            octaves--;
+            newNoteNumber = newNoteNumber + ascale.length;
+        }
+
+        newNoteNumber = ascale[newNoteNumber];
+
+
+        return key + newNoteNumber + octaves * 12;
+    }
 
     public double getRandomNoteDuration(double beatBias) {
 

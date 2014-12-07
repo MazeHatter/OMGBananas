@@ -84,6 +84,8 @@ public class GuitarView extends View {
     private float draw_debugBeatWidth;
     private float draw_beatWidth;
 
+    private Fretboard mFretboard = null;
+
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -146,6 +148,11 @@ public class GuitarView extends View {
     }
 
     public void onDraw(Canvas canvas) {
+
+        if (mFretboard != null) {
+            mFretboard.onDraw(canvas, getWidth(), getHeight());
+            return;
+        }
 
         //if (height != getHeight()) {
             width = getWidth();
@@ -225,6 +232,13 @@ public class GuitarView extends View {
 
     public boolean onTouchEvent(MotionEvent event) {
 
+        if (mFretboard != null) {
+            boolean result = mFretboard.onTouchEvent(event);
+            invalidate();
+            return result;
+        }
+
+
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
 
@@ -287,9 +301,12 @@ public class GuitarView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(Jam jam, Channel channel, Fretboard fretboard) {
         mJam = jam;
         mChannel = channel;
+
+        mFretboard = fretboard;
+
         setScaleInfo();
 
         mJam.addInvalidateOnBeatListener(this);

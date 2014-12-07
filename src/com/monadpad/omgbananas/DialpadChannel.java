@@ -26,8 +26,8 @@ public class DialpadChannel extends Channel {
     private boolean flanged = false;
 
     public DialpadChannel(Context context, Jam jam, OMGSoundPool pool,
-                          DialpadChannelSettings settings) {
-        super(context, jam, pool);
+                          String type, DialpadChannelSettings settings) {
+        super(context, jam, pool, type, settings.settingsName);
 
         lowNote = 0;
         highNote = 108;

@@ -13,5 +13,5 @@ public class DialpadChannelSettings {
     public boolean softt = true;
     public boolean softe = false;
 
-
+    public String settingsName = "DIALPAD_SINE_DELAY";
 }

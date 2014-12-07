@@ -13,7 +13,7 @@ public class BluetoothChannel extends Channel {
 
     public BluetoothChannel(Context context, Jam jam, OMGSoundPool pool,
                             BluetoothConnection connection) {
-        super(context, jam, pool);
+        super(context, jam, pool, "TYPE", "NAME");
         mConnection = connection;
 
         highNote = 85;

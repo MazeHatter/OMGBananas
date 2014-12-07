@@ -78,12 +78,17 @@ public class Jam {
         boolean updatePB = false;
 
         drumChannel = new HipDrumChannel(mContext, this, pool);
-        basslineChannel = new BassSamplerChannel(mContext, this, pool);
-        guitarChannel = new ElectricSamplerChannel(mContext, this, pool);
-        samplerChannel = new SamplerChannel(mContext, this, pool);
-        keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool);
+        basslineChannel = new BassSamplerChannel(mContext, this, pool,
+                "BASSLINE", "PRESET_BASS");
 
-        dialpadChannel = new DialpadChannel(mContext, this, pool, new DialpadChannelSettings());
+        guitarChannel = new ElectricSamplerChannel(mContext, this, pool,
+                "MELODY", "PRESET_GUITAR1");
+        samplerChannel = new SamplerChannel(mContext, this, pool);
+        keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool,
+                "MELODY", "PRESET_SYNTH1");
+
+        dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY",
+                new DialpadChannelSettings());
 
         soundsToLoad = drumChannel.getSoundCount() +
                 basslineChannel.getSoundCount() +
@@ -451,6 +456,20 @@ public class Jam {
         }
 
         monkeyWithSynth();
+        if (rand.nextInt(3) == 0) {
+            keyboardChannel.enable();
+        }
+        else {
+            keyboardChannel.disable();
+        }
+
+        monkeyWithDsp();
+        if (rand.nextInt(3) == 0) {
+            dialpadChannel.enable();
+        }
+        else {
+            dialpadChannel.disable();
+        }
 
         samplerChannel.makeFill();
         if (rand.nextInt(3) == 0) {
@@ -465,14 +484,7 @@ public class Jam {
 
         makeChannelNotes(dialpadChannel);
 
-        Log.d("MGH every rule change", getData());
-
         playbackThread.ibeat = 0;
-
-        //drumChannel.enable();
-        //basslineChannel.enable();
-        //keyboardChannel.enable();
-        //guitarChannel.enable();
     }
 
 
@@ -569,19 +581,19 @@ public class Jam {
 
         sb.append(", ");
 
-        getChannelData(basslineChannel, "BASSLINE", "PRESET_BASS", sb);
+        getChannelData(basslineChannel, sb);
 
         sb.append(", ");
 
-        getChannelData(keyboardChannel, "MELODY", "PRESET_SYNTH1", sb);
+        getChannelData(keyboardChannel, sb);
 
         sb.append(", ");
 
-        getChannelData(guitarChannel, "MELODY", "PRESET_GUITAR1", sb);
+        getChannelData(guitarChannel, sb);
 
         sb.append(", ");
 
-        getChannelData(dialpadChannel, "MELODY", "DIALPAD_SINE_DELAY", sb);
+        getChannelData(dialpadChannel, sb);
 
         sb.append(", ");
 
@@ -594,12 +606,12 @@ public class Jam {
 
     }
 
-    public void getChannelData(Channel channel, String type, String sound, StringBuilder sb) {
+    public void getChannelData(Channel channel, StringBuilder sb) {
 
         sb.append("{\"type\" : \"");
-        sb.append(type);
+        sb.append(channel.getType());
         sb.append("\", \"sound\": \"");
-        sb.append(sound);
+        sb.append(channel.getSoundName());
         sb.append("\", \"scale\": \"");
         sb.append(mm.getScale());
         sb.append("\", \"rootNote\": ");
@@ -713,6 +725,10 @@ public class Jam {
 
     public int getScaleIndex() {
         return mm.getScaleIndex();
+    }
+
+    public String getScaleString() {
+        return mm.getScale();
     }
 
     public Channel getGuitarChannel() {
@@ -834,5 +850,9 @@ public class Jam {
 
     public Channel getDialpadChannel() {
         return dialpadChannel;
+    }
+
+    public int getScaledNoteNumber(int basicNote) {
+        return mm.scaleNote(basicNote, 0);
     }
 }

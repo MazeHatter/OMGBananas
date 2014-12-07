@@ -1,6 +1,7 @@
 package com.monadpad.omgbananas;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ public class GuitarFragment extends OMGFragment {
 
         guitarView = (GuitarView)view.findViewById(R.id.guitarfrets);
         if (mJam != null)
-            guitarView.setJam(mJam, mChannel);
+            getPreferredFretboard();
 
         return view;
     }
@@ -34,8 +35,21 @@ public class GuitarFragment extends OMGFragment {
         mChannel = channel;
 
         if (guitarView != null) {
-            guitarView.setJam(mJam, mChannel);
+            getPreferredFretboard();
         }
+    }
+
+    private Fretboard getPreferredFretboard() {
+
+        String sound = mChannel.getMainSound();
+
+        String fretboardJson = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(sound + "_DEFAULT_FRETBOARD_JSON",
+                    getString(R.string.default_fretboard_json));
+
+        guitarView.setJam(mJam, mChannel,
+                new Fretboard(mChannel, mJam, fretboardJson));
+        return null;
     }
 
 }

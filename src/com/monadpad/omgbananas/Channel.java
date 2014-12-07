@@ -1,6 +1,7 @@
 package com.monadpad.omgbananas;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -55,10 +56,18 @@ public abstract class Channel {
 
     ArrayList<DebugTouch> debugTouchData = new ArrayList<DebugTouch>();
 
-    public Channel(Context context, Jam jam, OMGSoundPool pool) {
+    private String mType;
+    private String mSound;
+    private String mMainSound;
+
+    public Channel(Context context, Jam jam, OMGSoundPool pool, String type, String sound) {
         mPool = pool;
         this.context = context;
         mJam = jam;
+
+        mType = type;
+        mMainSound = sound;
+        mSound = sound;
 
         subbeats = mJam.getSubbeats();
         mainbeats = mJam.getBeats();
@@ -114,6 +123,8 @@ public abstract class Channel {
 
         if (!note.isRest()) {
             int noteToPlay = note.getInstrumentNote();
+            Log.d("MGH noteToPlay", Integer.toString(noteToPlay));
+
             playingId = mPool.play(ids[noteToPlay], volume, volume, 10, 0, 1);
 
         }
@@ -295,5 +306,16 @@ public abstract class Channel {
 
     public float getVolume() {
         return volume;
+    }
+
+    public String getSoundName() {
+        return mSound;
+    }
+    public String getType() {
+        return mType;
+    }
+
+    public String getMainSound() {
+        return mMainSound;
     }
 }
